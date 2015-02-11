@@ -1,0 +1,1 @@
+2015.01.31 spectrum::deleting the print, comp, compare functions with (char *) as an argument, only the one with (const string &) is enough

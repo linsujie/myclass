@@ -1,0 +1,198 @@
+#!/home/linsj/bin/ruby
+# The file to generate the Makefile for detected classes in current dir
+require 'fileutils'
+require '/home/linsj/.scripts/optionutils.rb'
+
+# Generate the list of basic class, working class, those with just a head file
+# and those with datas
+class Lists
+  attr_accessor :bsclass, :head, :data, :wkclass, :srcdir
+
+  def initialize(srcdir = '.', choice = :a)
+    @srcdir, @bsclass, @wkclass, @head, @data = srcdir, [], [], [], []
+    @exc, @work, @choice = getflist('exc_list'), getflist('work_list'), choice
+    genlist
+  end
+
+  private
+
+  def getflist(file = 'exc_list')
+    fname = "#{@srcdir}/#{file}"
+    File.exist?(fname) ? File.new(fname).each.to_a.map { |it| it.chomp } : []
+  end
+
+  def deal(dirs)
+    return if !File.file?("#{dirs}/#{dirs}.h") || @exc.index(dirs)
+
+    incls = ->(dir) { @work.index(dirs) ? @wkclass << dirs : @bsclass << dirs }
+    File.file?("#{dirs}/#{dirs}.cc") ? incls.call(dirs) : @head << dirs
+    @data << dirs if File.directory?("#{dirs}/#{dirs}_data")
+  end
+
+  def genlist
+    Dir.foreach(@srcdir) { |dirs| deal(dirs) if dirs != '.' && dirs != '..' }
+    @wkclass = [] if @choice == :b
+    @bsclass = [] if @choice == :w
+    puts "\e\[1mThe classes:\e\[0m" + @bsclass.join("\n") + "\n\n"\
+      + @wkclass.join("\n") + "\n" "\e\[1mwould be installed.\e\[0m"
+  end
+end
+
+# Generating Makefile
+class GenMakefile
+  def initialize(list, options, dblist)
+    @list, @options, @dblist = list, options, dblist
+    @libs = { ['libwork', '$(WOBJ)'] => @list.wkclass, \
+              ['liblin', '$(BOBJ)'] => @list.bsclass }
+      .select { |k, v| !v.empty? }
+      .map { |k, _| @options[1] ? k << "#{k[0]}s.a" : k << "#{k[0]}.so" }
+
+    cr_makefile
+  end
+
+  private
+
+  def complib(lib, obj)
+    static = ->(l, o) { "\tar crs #{lib} #{obj}\n" }
+    dynam = ->(l, o) { "\tg++ $(CFLAG) -shared -fPIC #{obj} -o #{lib}\n" }
+    @options[1] ? static.call(lib, obj) : dynam.call(lib, obj)
+  end
+  STAT = "\tar crs liblins.a $(DOBJ) $(UDOBJ)\n"
+  DYNA = "\tg++ $(CFLAG) -shared -fPIC $(DOBJ) $(UDOBJ) -o liblin.so\n"
+  DATDIR = %q(-D DATDIR=\"$(HOME)/lib/$(basename $(notdir $<))_data\")
+
+  def self.comprule(added = '')
+    "g++ $(CFLAG) #{added} $(INC_PATH) -c -fPIC $(notdir $<) -o $(notdir $@)"
+  end
+
+  CCRULE = <<-eof.gsub(/^ */, '')
+    $(DOBJ):%.o:%.cc
+    \tcd $(dir $<); #{comprule("$(DEBUG) " + DATDIR)}
+    $(UDOBJ):%.o:%.cc
+    \tcd $(dir $<); #{comprule(DATDIR)}
+    eof
+
+  HEAD = <<-eof.gsub(/^ */, '')
+    CLIST = $(BCLIST) $(WCLIST)
+    VPATH = $(foreach n,$(CLIST),./$(n))\n
+    UDLIST = $(filter-out $(DLIST),$(CLIST))
+    DOBJ = $(foreach n,$(DLIST),$(n)/$(n).o)
+    UDOBJ = $(foreach n,$(UDLIST),$(n)/$(n).o)
+    BOBJ = $(foreach n, $(BCLIST), $(n)/$(n).o)
+    WOBJ = $(foreach n, $(WCLIST), $(n)/$(n).o)
+    INC = $(foreach n,$(CLIST) $(HLIST),$(n)/$(n).h)
+    INC_PATH = $(foreach n,$(CLIST) $(HLIST),-I ../$(n)/)\n
+  eof
+
+  def mkf_head
+    @makefile = <<-eof.gsub(/^ */, '')
+      WCLIST = #{@list.wkclass.join(' ')}
+      BCLIST = #{@list.bsclass.join(' ')}
+      HLIST = #{@list.head.join(' ')}
+      DLIST = #{[*@dblist].join(' ')}
+      CFLAG = -std=c++0x #{@options[0]}\nDEBUG = #{@options[2]}
+    eof
+    @makefile << HEAD
+  end
+
+  def mkf_tail
+    @makefile << <<-eof.gsub(/^ */, '')
+    clean:
+    \trm */*.o #{@libs.transpose[2].join(' ')}
+    install:
+    \tinstall -D -m 664 $(INC) ~/include
+    \tinstall -D #{@libs.transpose[2].join(' ')} ~/lib
+    eof
+
+    @makefile << @list.data.map { |x| install_data(x) }.flatten.join("\n")
+  end
+
+  def install_data(cls)
+    ["\tmkdir -p ~/lib/#{cls}_data",
+     "\tinstall -D #{cls}/#{cls}_data/* ~/lib/#{cls}_data"]
+  end
+
+
+  def cr_makefile
+    puts "\e\[1mcreate Makefile\e\[0m"
+
+    mkf_head
+    @makefile << "all:#{@libs.transpose[0].join(' ')}\n"
+    @libs.each { |n, o, l| @makefile << "#{n}:#{o}\n#{complib(l, o)}" }
+    @makefile << CCRULE
+    mkf_tail
+    open('Makefile', 'w').puts(@makefile)
+  end
+end
+
+LIBPATHS = <<-eof.gsub(/^ */, '')
+  #Configure for ~/lib and ~/include
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/lib
+  export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:~/include
+  export LIBRARY_PATH=$LIBRARY_PATH:~/lib
+eof
+
+def configure
+  homedir = `echo $HOME`.chomp!
+  regexp = /export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:~\/lib/
+  mark = File.new(homedir + '/.bashrc', 'r')
+    .reduce(false) { |a, e| e.match(regexp) || a }
+  return if mark
+
+  puts 'adding paths to .bashrc'
+  File.new(homedir + '/.bashrc', 'a').puts LIBPATHS
+end
+
+HELPINFO =  <<-EOF.gsub(/^ */, '')
+    This script is to install all the classes under srcdir to $HOME. It will
+    build dir ~/lib and ~/include and set them to be default path in .bashrc
+    \n
+    --sdir    \t To point the source direction, which is "." by default
+    -f --cflag\t can be set to the form 'g,O2', which will the transformed
+    to '-g -O2'
+    -s        \t Generate a static library instead of dynamic one
+    -d --debug\t Using debug utils or not, if followed with 'file', the debug
+    information would be writted to specific file
+    -l --list \t The list that adopt the debug utils
+    -h --help \t Print this list
+EOF
+
+def put_help_info
+  puts HELPINFO
+  exit
+end
+
+# Class to manipulate the options
+class Arg < ArgvBase
+  def config
+    settrue(:sdir, :cflag, :list)
+    setdf
+    lglist[:cflag] = ([*lglist[:cflag]] << :Wall).uniq
+      .reject { |f| f == true || f == false }
+  end
+end
+
+# Determine the installing parameters
+shlist = { h: nil, f: nil, s: nil, d: nil, l: nil, c: nil }
+lglist = { help: nil, sdir: true, cflag: true, static: nil,\
+           debug: nil, list: true, choice: true }
+dflist = { sdir: '.', cflag: [:Wall, :g, :O2], list: '', choice: 'a' }
+slmap = { h: :help, f: :cflag, s: :static, d: :debug, l: :list, c: :choice }
+transmap = {}
+argv = Arg.new(shlist, lglist, dflist, slmap, transmap)
+argv.deal(ARGV)
+argv.config
+p argv.lglist
+
+# Set the path of src and build directory
+
+# Installing
+put_help_info if lglist[:help]
+
+cflag = '-' + lglist[:cflag].join(' -')
+debug = lglist[:debug] ? ' -D_DEBUG' : ''
+debug << ' -DDEBUG_TO_FILE' if lglist[:debug] == :file
+
+list = Lists.new(File.expand_path(lglist[:sdir]), lglist[:choice])
+GenMakefile.new(list, [cflag, shlist[:s], debug], lglist[:list])
+configure

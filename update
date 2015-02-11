@@ -1,0 +1,10 @@
+#!/bin/bash
+
+./configure -cs b
+make
+make install
+
+./configure -cs w #-d file -l chi2prop
+rm chi2prop/chi2prop.o
+make
+make install
