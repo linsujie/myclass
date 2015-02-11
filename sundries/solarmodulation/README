@@ -1,0 +1,4 @@
+The sym_solar_mod.h and sym_solar_mod.cc include the modulation code, they depends on the other files.
+
+The solar_test.cc is an example to use the modulation function.
+The spectrum class including the member E and F (energy and flux), each of them is a single vector.
