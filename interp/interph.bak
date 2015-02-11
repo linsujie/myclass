@@ -1,0 +1,36 @@
+#ifndef _INTERP_H
+#define _INTERP_H
+/*********************************************************************
+interpolating with linear method or lagrangian method, or interpolating
+in the logscale
+*********************************************************************/
+#include<cmath>
+#include<vector>
+
+using namespace std;
+class interp {
+private:
+  double *x_tab,
+         *y_tab;
+  unsigned dim;
+  vector <double> lnx_tab, lny_tab, &x_tabv, &y_tabv;
+  int create_lntab();
+  int create_lntaba();
+  int create_lntabv();
+  int get_indexa(double x);
+  int get_indexv(double x);
+  double laaska(double x, int n);
+  double laaskv(double x, int n);
+  double linaska(double x);
+  double linaskv(double x);
+
+public:
+  interp(double *xtab_, double *ytab_, unsigned n);
+  interp(vector <double> &xtab_, vector <double> &ytab_);
+  int get_index(double x);
+  double laask(double x, int n);
+  double linask(double x);
+  double lnask(double x);//be careful! the x is changed in this function
+
+};
+#endif // for #ifndef _INTERP_H
