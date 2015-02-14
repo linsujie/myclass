@@ -248,6 +248,9 @@ int mcparas::print() const {
          << "electron_g_1 :\t" << galdef->electron_g_1 << endl
          << "electron_rigid_br :\t" << galdef->electron_rigid_br << endl
          << "electron_g_2 :\t" << galdef->electron_g_2 << endl
+         << "DM_NFW_rho0  :\t" << galdef->DM_NFW_rho0  << endl
+         << "DM_NFW_rs    :\t" << galdef->DM_NFW_rs    << endl
+         << "DM_NFW_gamma :\t" << galdef->DM_NFW_gamma << endl
          << "DM_int0 :\t" << galdef->DM_int0 << endl
          << "DM_int1 :\t" << galdef->DM_int1 << endl
          << "DM_double0 :\t" << galdef->DM_double0 << endl
@@ -263,6 +266,8 @@ int mcparas::print() const {
          << "DM_double10 :\t" << galdef->DM_double10 << endl
          << "DM_double11 :\t" << galdef->DM_double11 << endl
          << "DM_double12 :\t" << galdef->DM_double12 << endl
+         << "DM_double13 :\t" << galdef->DM_double13 << endl
+         << "DM_double14 :\t" << galdef->DM_double14 << endl
          << "primary_DM_positron :\t" << galdef->primary_DM_positron << endl
          << "primary_DM_electron :\t" << galdef->primary_DM_electron << endl
          << "primary_electrons :\t" << galdef->primary_electrons << endl
