@@ -10,7 +10,7 @@
 #define printDebugMsg(moduleName, format, ...) {\
     char buffer[DEBUG_BUFFER_MAX+1]={0};\
     snprintf( buffer, DEBUG_BUFFER_MAX \
-              , "[%s]\tFile:%s, Line:%d\t"format"\n", moduleName, __FILE__, __LINE__, ##__VA_ARGS__ );\
+              , "[%s]\tFile:%s, Line:%d\t" format "\n", moduleName, __FILE__, __LINE__, ##__VA_ARGS__ );\
     FILE* fd = fopen(DEBUG_FILE, "a");\
     if ( fd != NULL ) {\
       fwrite( buffer, strlen(buffer), 1, fd );\
@@ -20,7 +20,7 @@
   }
 #else
 #define printDebugMsg(moduleName, format, ...) \
-  printf( "[%s]\tFile:%s, Line:%d\t"format"\n", moduleName, __FILE__, __LINE__, ##__VA_ARGS__ );
+  printf( "[%s]\tFile:%s, Line:%d\t" format "\n", moduleName, __FILE__, __LINE__, ##__VA_ARGS__ );
 #endif //end for #ifdef DEBUG_TO_FILE
 #else
 #define printDebugMsg(moduleName, format, ...)

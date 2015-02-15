@@ -43,22 +43,22 @@ double anaspec_pppc::ask(double E, double mdm, bool cumulate) {
   if (!loaded[product]) load(product);
   for(unsigned i = 0; i < product_map[product].size(); i++)
     result += pppc_ask(E, mdm, product_map[product][i], cumulate) * product_norm[product][i];
-  printDebugMsg("Routine", "<<ask: %f", sum);
+  printDebugMsg("Routine", "<<ask: %f", result);
   return result;
 }
 double anaspec_pppc::pppc_ask(double E, double mdm, pppc::pppc_product prod, bool cumulate) {
   printDebugMsg("Routine", ">>pppc_ask: E, m_dm, cumulate = %f, %f, %d, %d", E, mdm, prod, cumulate);
-  double sum = 0, x = E/mdm, realx;
+  double result = 0, x = E/mdm, realx;
   for (unsigned i = 0; i < ANASPEC_BRANCH_NUM; i++)
     if(branch[i]) {
       if(cumulate && x > low_x) {
         realx = x > 1 ? 1 : x;
-        sum += branch[i] * cumutable[prod][branch_map[i]].lnask(realx, mdm);
+        result += branch[i] * cumutable[prod][branch_map[i]].lnask(realx, mdm);
       } else if (x > low_x && x <= 1)
-        sum += branch[i] * table[prod][branch_map[i]].lnask(x, mdm) / mdm;
+        result += branch[i] * table[prod][branch_map[i]].lnask(x, mdm) / mdm;
     }
   printDebugMsg("Routine", "<<pppc_ask: %f", result);
-  return sum;
+  return result;
 }
 
 int anaspec_pppc::load(pppc::pppc_product prod) {
@@ -80,7 +80,7 @@ int anaspec_pppc::load(pppc::pppc_product prod) {
 
   int mind = -1, xind = -1;
   double Nx[PPPC_BRANCH_NUM],
-         mold = 0, xold = 0, mnew, xnew, val;
+         mold = 0, mnew, xnew, val; // xold = 0
   while (getline(dats, line)) {
     istringstream iss(line);
     iss >> mnew; iss >> xnew;
@@ -104,7 +104,7 @@ int anaspec_pppc::load(pppc::pppc_product prod) {
       cumtab[i_branch].insval(xaxis[xind], mass[mind], Nx[i_branch]);
     }
 
-    mold = mnew; xold = xnew;
+    mold = mnew;// xold = xnew;
   }
 
     for (unsigned i_branch = 0; i_branch < PPPC_BRANCH_NUM; i_branch++) {
