@@ -35,6 +35,13 @@ int chi2prop::setkeep(vector <load_dat::fluxes> &keep_) {
   return 0;
 }
 
+inline spectrum chi2prop::get_spec(load_dat::fluxes element, unsigned i_iso) const {
+  printDebugMsg("Check cposi", "rescale with cposi: %g", cposi);
+  if((element == load_dat::secelecs || element == load_dat::secposis) && i_iso == 0) return cposi * Fluxes[element][0];
+  else return Fluxes[element][i_iso];
+}
+
+
 int chi2prop::get_by_iso(double *Etmp, double *Ftmp, int ndat, load_dat::fluxes element) {
   printDebugMsg("Routine", ">>get_flux: %d, %d", load_dat::iso_vectors[element][0], load_dat::iso_vectors[element][1]);
   vector <int> isovec = load_dat::iso_vectors[element];
@@ -53,7 +60,6 @@ int chi2prop::get_by_name(double *Etmp, double *Ftmp, int ndat, load_dat:: fluxe
 
   galpropmc->get_result(Etmp, Ftmp, load_dat::iso_names[element - load_dat::common_fluxnum].c_str());
   Fluxes[element][0] = spectrum(Etmp, Ftmp, ndat);
-  if(element == load_dat::secelecs || element == load_dat::secposis) Fluxes[element][0] *= cposi;
 
   printDebugMsg("Routine", "<<get_flux");
   return 1;
@@ -108,8 +114,8 @@ int chi2prop::solar_modulas(load_dat::fluxes element, unsigned iso) {
   Fluxes_as[element][iso].resize(phi.size());
   for(unsigned i_phi = 0; i_phi < phi.size(); i_phi++) {
     solar->ini(A_iso, Z_iso, phi[i_phi]);
-    Fluxes_as[element][iso][i_phi] = Fluxes[element][iso];
-    solar->mod(Fluxes[element][iso], Fluxes_as[element][iso][i_phi]);
+    Fluxes_as[element][iso][i_phi] = get_spec(element, iso);
+    solar->mod(get_spec(element, iso), Fluxes_as[element][iso][i_phi]);
   }// i_phi
   return 0;
 }
@@ -140,8 +146,8 @@ spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors) con
 
   for(unsigned i = 0; i < elevectors.size(); i++) {
     for(unsigned i_iso = 0; i_iso < Fluxes[elevectors[i]].size(); i_iso++)
-      if(0 == i && 0 == i_iso) res = Fluxes[elevectors[i]][i_iso];
-      else res += Fluxes[elevectors[i]][i_iso];
+      if(0 == i && 0 == i_iso) res = get_spec(elevectors[i], i_iso);
+      else res += get_spec(elevectors[i], i_iso);
   }
   return res;
 }
@@ -328,3 +334,4 @@ int chi2prop::start(int iter) {
 int chi2prop::setpara(double *p, model_kind mod) {
   return galpropmc->set_params(p, mod);
 }
+

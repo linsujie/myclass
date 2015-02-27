@@ -30,6 +30,7 @@ private:
   vector <load_dat::fluxes> keep;
   static const vector <const char *> contriname;
 
+  inline spectrum get_spec(load_dat::fluxes element, unsigned i_iso) const;
   int get_flux(load_dat::choice chc);
   int get_flux(load_dat::fluxes element);
   int get_by_iso(double *E, double *F, int ndat, load_dat::fluxes element);
