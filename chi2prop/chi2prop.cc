@@ -41,7 +41,6 @@ inline spectrum chi2prop::get_spec(load_dat::fluxes element, unsigned i_iso) con
   else return Fluxes[element][i_iso];
 }
 
-
 int chi2prop::get_by_iso(double *Etmp, double *Ftmp, int ndat, load_dat::fluxes element) {
   printDebugMsg("Routine", ">>get_flux: %d, %d", load_dat::iso_vectors[element][0], load_dat::iso_vectors[element][1]);
   vector <int> isovec = load_dat::iso_vectors[element];
