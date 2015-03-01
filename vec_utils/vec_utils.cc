@@ -2,6 +2,7 @@
 #include<cstdarg>
 #include"vec_utils.h"
 
+using std::string;
 using std::vector;
 using std::cout;
 using std::endl;
@@ -68,6 +69,7 @@ ostream& operator<< (ostream& out, const vector <vector <type> > &vec) {\
 
 OUTSTREAM(double)
 OUTSTREAM(int)
+OUTSTREAM(string)
 
 #define NOT_DIVIDE(lhs,oper,rhs) res.push_back( lhs oper rhs )
 #define IS_DIVIDE(lhs,oper,rhs)\
