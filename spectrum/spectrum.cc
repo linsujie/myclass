@@ -34,6 +34,10 @@ spectrum::spectrum(const char *filename): Es(0), Ee(0), factor(0) {
   double tmp;
 
   ifstream datfile(filename);
+  if (datfile.fail() || datfile.bad()) {
+    cout << "ERROR::spectrum::spectrum:fail to read from file " << filename << endl;
+    exit(1);
+  }
 
   for (unsigned nline = 1; getline(datfile, line); nline++) {
     if (line.size() == 0 || line.at(0) == annota[0]) continue;
@@ -43,6 +47,8 @@ spectrum::spectrum(const char *filename): Es(0), Ee(0), factor(0) {
     is >> tmp, E.push_back(tmp);
     is >> tmp, F.push_back(tmp);
   }
+
+  datfile.close();
 
   ini_check();
 }
