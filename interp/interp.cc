@@ -171,6 +171,6 @@ double interp::lnask(double x) const {
 
   x = log(fmax(x, 1e-300));
   const double lnask = (x - lnx_tab[ind + 1]) * (lny_tab[ind] - lny_tab[ind + 1]) / (lnx_tab[ind] - lnx_tab[ind + 1]) + lny_tab[ind + 1];
-  
+
   return exp(RANGE(lnask));
 }

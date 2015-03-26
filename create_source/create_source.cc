@@ -1,6 +1,7 @@
 #include<cstdlib>
 #include<iostream>
 #include<cmath>
+#include"gaussrand.h"
 #include"create_source.h"
 
 using namespace pro;
@@ -55,32 +56,6 @@ double source::get_r() {
   }
 
   return ran_num;
-}
-
-/*********************************************************************
-Generating a number acording to Gaussian distribution
-*********************************************************************/
-double source::gaussrand(double x0, double sigma) {
-  static double gauss_V1, gauss_V2, gauss_S;
-  static int phase = 0;
-  double X;
-
-  if (phase == 0) {
-    do {
-      double U1 = (double)rand() / RAND_MAX;
-      double U2 = (double)rand() / RAND_MAX;
-      gauss_V1 = 2 * U1 - 1;
-      gauss_V2 = 2 * U2 - 1;
-      gauss_S = gauss_V1 * gauss_V1 + gauss_V2 * gauss_V2;
-    } while (gauss_S >= 1 || gauss_S == 0);
-
-    X = gauss_V1 * sqrt(-2 * log(gauss_S) / gauss_S);
-
-  } else
-    X = gauss_V2 * sqrt(-2 * log(gauss_S) / gauss_S);
-
-  phase = 1 - phase;
-  return X * sigma + x0;
 }
 
 double source::get_nu() {

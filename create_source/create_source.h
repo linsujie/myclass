@@ -13,7 +13,7 @@ private:
   double get_r();
   double get_nu();
   inline double Qr(double r, double r_sun, double alpha, double beta);
-  double gaussrand(double x0, double sigma);
+  //double gaussrand(double x0, double sigma);
   int create_injection(double delta);
   /*********************************************************************
     int test_ran(double (source::*ranfun)(),double range_a,double range_b,int n_bin,int num);
