@@ -9,6 +9,13 @@
 using std::abs;
 using std::cout;
 using std::endl;
+using std::vector;
+
+Table2D::Table2D(const vector <double> &x_, const vector <double> &y_, const vector <vector <double> > &tab_) {
+  for (unsigned i_x = 0; i_x < x_.size(); i_x++)
+    for (unsigned i_y = 0; i_y < y_.size(); i_y++)
+      insval(x_[i_x], y_[i_y], tab_[i_x][i_y]);
+}
 
 Table2D::Table2D(gfunction *func_): func(func_) {}
 

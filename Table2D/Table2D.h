@@ -6,6 +6,7 @@ each corresponding point (x, y). The value in each point is determined
 by a function you defined before.
  *********************************************************************/
 #include<map>
+#include<vector>
 #include"gfunction.h"
 class Table2D {
 public:
@@ -21,6 +22,7 @@ public:
   Table value;
 
   Table2D() {};
+  Table2D(const std::vector <double> &x_, const std::vector <double> &y_, const std::vector <std::vector <double> > &tab_);
   Table2D(gfunction *func_);
 
   int setfunc(gfunction *func_);
