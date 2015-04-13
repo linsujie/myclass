@@ -8,11 +8,11 @@
 class mcparas {
 private:
   unsigned p_index;
+  double *p;
   Galdef *galdef;
 
 public:
 
-  const static std::vector <std::string> mode_name;
   const static std::vector < std::vector <std::string> > enum_names;
   const static std::vector <std::string> elec_runNumber, prot_runNumber, BC_runNumber;
 
@@ -20,35 +20,40 @@ public:
   enum dm_mode { pulsar, annihilate, decay };
   enum prop_mode { PD, DC, DR, DC2, DR2, DRC};
   enum inject_mode { nbk, onebk, twobk };
-
-  enum modes {
-    PSR, DMmu, DMtau, DMww, DMuu, DMbb, DMtt, DMfe, DMfmu, DMftau,
-    PSRwp, DMmuwp, DMtauwp, DMwwwp, DMuuwp, DMbbwp, DMttwp, DMfewp, DMfmuwp, DMftauwp,
-    PSRwb, DMmuwb, DMtauwb, DMwwwb, DMuuwb, DMbbwb, DMttwb, DMfewb, DMfmuwb, DMftauwb,
-    PSRnb, DMmunb, DMtaunb, DMwwnb, DMuunb, DMbbnb, DMttnb, DMfenb, DMfmunb, DMftaunb
-  };
+  enum mix_branch { emutau, mutaub, emutaub, b3l };
 
   mcparas(Galprop *galprop);
+  int setgalprop(Galprop *galprop);
+  int setpara(double *p_);
 
-  int elec_setpara(double *p, inject_mode bks, double *branches, bool with_proton, dm_mode dmm, pppc_or_us pc);
+  void elec_setpara_pre(double *p, inject_mode bks, bool with_proton, dm_mode dmm, pppc_or_us pc);
+  int elec_setpara(double *p, inject_mode bks, double *branches,
+                   bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
+  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran,
+                   bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
 
-  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton, dm_mode dmm, pppc_or_us pc, Galprop *galprop);
-  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton, dm_mode dmm, pppc_or_us pc);
-  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton);
-  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran);
-
-  int elec_setpara(double *p, anaspec::branch_choice bran, dm_mode dmm, pppc_or_us pc);
-  int elec_setpara(double *p, double *branches, dm_mode dmm, pppc_or_us pc);
+  int elec_setpara(double *p, anaspec::branch_choice bran, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
+  int elec_setpara(double *p, double *branches, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
 
   static unsigned getenum(const string &enum_name);
   int print() const;
-  int propagation_set(double *p, prop_mode prop);
-  int proton_set(double *p, inject_mode bks);
-  int proton_set(double *p);
-  int electron_set(double *p, inject_mode bks);
-  int setexotic(double *p, anaspec::branch_choice branch);
-  int setexotic(double *p, double *branches);
+
+  int propagation_set_whole(prop_mode prop);
+  int propagation_set(prop_mode prop);
+
+  int proton_set(inject_mode bks);
+  int proton_set();
+
+  int electron_set(inject_mode bks);
+
+  int exotic_set();
+
+  int branch_set(anaspec::branch_choice branch) const;
+  int branch_set(double *branches) const;
+  int branch_set(mix_branch mixbran);
+
   int setdm(dm_mode dm, pppc_or_us pc) const;
+
   int close_Z() const;
 };
 #endif // for #ifndef _MCPARAS_H
