@@ -6,9 +6,9 @@ using std::vector;
 using std::string;
 
 const vector <string> mcparas::mode_name = {
-  "PSRNP", "MUNP", "TAUNP", "WWNP", "UUNP", "BBNP", "TTNP", "FENP", "FMUNP", "FTAUNP", 
-  "PSRWP", "MUWP", "TAUWP", "WWWP", "UUWP", "BBWP", "TTWP", "FEWP", "FMUWP", "FTAUWP", 
-  "PSRNP", "MUNP", "TAUNP", "WWNP", "UUNP", "BBNP", "TTNP", "FENP", "FMUNP", "FTAUNP", 
+  "PSRNP", "MUNP", "TAUNP", "WWNP", "UUNP", "BBNP", "TTNP", "FENP", "FMUNP", "FTAUNP",
+  "PSRWP", "MUWP", "TAUWP", "WWWP", "UUWP", "BBWP", "TTWP", "FEWP", "FMUWP", "FTAUWP",
+  "PSRNP", "MUNP", "TAUNP", "WWNP", "UUNP", "BBNP", "TTNP", "FENP", "FMUNP", "FTAUNP",
   "PSRNB", "MUNB", "TAUNB", "WWNB", "UUNB", "BBNB", "TTNB", "FENB", "FMUNB", "FTAUNB"
 };
 const vector <string> mcparas::elec_runNumber = { "mc_ele_PD", "mc_ele_DC", "mc_ele_DR", "mc_ele_DC2", "mc_ele_DR2", "mc_ele_DRC" },
@@ -37,7 +37,7 @@ int mcparas::propagation_set(double *p, prop_mode prop) {
     galdef->dz = p[5] / 20;
 
     galdef->eta = 1;
-    
+
     if(DR2 == prop) galdef->eta = -0.4;
     if(DC2 == prop) {
       galdef->D_g_1 = 0;
@@ -178,49 +178,53 @@ int mcparas::setexotic(double *p, double *branches) {
   return 0;
 }
 
-int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton, dm_mode dmm, pppc_or_us pc, Galprop *galprop) {
-  galdef = &(galprop->galdef);
-  return elec_setpara(p, bks, bran, with_proton, dmm, pc);
+int mcparas::setexotic(double *p, mix_branch mixbran) {
+  double branches[branch_num] = { 0 };
+
+  switch(mixbran) {
+  case emutau:
+    if(1 - x - y
+  }
 }
 
-int mcparas::elec_setpara(double *p, inject_mode bks, double *branches, bool with_proton, dm_mode dmm, pppc_or_us pc) {
-  p_index = 0;
-
-  setdm(dmm, pc);
-  if(with_proton) proton_set(p + p_index);
-
-  electron_set(p + p_index, bks);
-  setexotic(p + p_index, branches);
+int mcparas::setgalprop(Galprop *galprop) {
+  galdef = &(galprop->galdef);
   return 0;
 }
-int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton, dm_mode dmm, pppc_or_us pc) {
+
+void mcparas::elec_setpara_pre(double *p, inject_mode bks, bool with_proton, dm_mode dmm, pppc_or_us pc) {
   p_index = 0;
 
   setdm(dmm, pc);
   if(with_proton) proton_set(p + p_index);
 
   electron_set(p + p_index, bks);
+}
+
+int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran,
+                          bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc) {
+  elec_setpara_pre(p, bks, with_proton, dmm, pppc)
   setexotic(p + p_index, bran);
   return 0;
 }
-int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran, bool with_proton) {
-  return elec_setpara(p, bks, bran, with_proton, annihilate, pppc);
-}
-int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran) {
-  return elec_setpara(p, bks, bran, false);
+
+int mcparas::elec_setpara(double *p, inject_mode bks, double *branches,
+                          bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc) {
+  elec_setpara_pre(p, bks, with_proton, dmm, pppc)
+  setexotic(p + p_index, branches);
+  return 0;
 }
 
 int mcparas::elec_setpara(double *p, anaspec::branch_choice bran, dm_mode dmm, pppc_or_us pc) {
   p_index = 0;
-
   setdm(dmm, pc);
-  
+
   setexotic(p + p_index, bran);
   return 0;
 }
+
 int mcparas::elec_setpara(double *p, double *branches, dm_mode dmm, pppc_or_us pc) {
   p_index = 0;
-
   setdm(dmm, pc);
 
   setexotic(p + p_index, branches);

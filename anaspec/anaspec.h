@@ -16,9 +16,9 @@ The cumulated mode will return the value of \int_0^{E_0} dN/dE dE
 *********************************************************************/
 class anaspec {
 public:
-  enum product_choice {positron, antiproton, gamma, nu, deuterons};
-  enum branch_choice {electron, mu, tau, W, up, charm, bottom, top, four_e, four_mu, four_tau};
-  static const unsigned product_num, branch_num;
+  enum product_choice {positron, antiproton, gamma, nu, deuterons, product_num};
+  enum branch_choice {electron, mu, tau, W, up, charm, bottom, top, four_e, four_mu, four_tau, branch_num};
+
   static const std::vector <std::vector <std::string> > enum_names;
   //enum branch_choice {electron, mu, tau, W, up, bottom, top};
 

@@ -4,7 +4,7 @@
 make
 make install
 
-./configure -cs w -d -l chi2prop
+./configure -cs w # -d -l chi2prop
 rm chi2prop/chi2prop.o
 make
 make install

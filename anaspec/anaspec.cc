@@ -14,9 +14,6 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-const unsigned anaspec::product_num = four_tau + 1,
-      anaspec::branch_num = deuterons + 1;
-
 const string anaspec::prodname[ANASPEC_PROD_NUM] = { "posi", "pbar", "gamma", "nu", "deuterons" },
     anaspec::braname[ANASPEC_BRANCH_NUM] = { "e", "mu", "tau", "ww", "uu", "cc", "bb", "tt", "foure", "fourmu", "fourtau" };
 
