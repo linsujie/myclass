@@ -273,51 +273,7 @@ int mcparas::setpara(double *p_) {
   return 0;
 }
 
-//void mcparas::elec_setpara_pre(double *p, inject_mode bks, bool with_proton, dm_mode dmm, pppc_or_us pc) {
-//  p_index = 0;
-//
-//  setdm(dmm, pc);
-//  if(with_proton) proton_set(p + p_index);
-//
-//  electron_set(p + p_index, bks);
-//}
-//
-//int mcparas::elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran,
-//                          bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc) {
-//  elec_setpara_pre(p, bks, with_proton, dmm, pppc)
-//  setexotic(p + p_index);
-//  setbranch(bran);
-//  return 0;
-//}
-//
-//int mcparas::elec_setpara(double *p, inject_mode bks, double *branches,
-//                          bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc) {
-//  elec_setpara_pre(p, bks, with_proton, dmm, pppc)
-//  setexotic(p + p_index);
-//  setbranch(branches);
-//  return 0;
-//}
-//
-//int mcparas::elec_setpara(double *p, anaspec::branch_choice bran, dm_mode dmm, pppc_or_us pc) {
-//  p_index = 0;
-//  setdm(dmm, pc);
-//
-//  setexotic(p + p_index);
-//  setbranch(bran);
-//  return 0;
-//}
-//
-//int mcparas::elec_setpara(double *p, double *branches, dm_mode dmm, pppc_or_us pc) {
-//  p_index = 0;
-//  setdm(dmm, pc);
-//
-//  setexotic(p + p_index);
-//  setbranch(branches);
-//  return 0;
-//}
-
 int mcparas::print() const {
-  cout << "begin" << endl;
   cout << "D0_xx :\t"            << galdef->D0_xx           << endl
     << "eta :\t"              << galdef->eta             << endl
     << "D_rigid_br :\t"       << galdef->D_rigid_br      << endl

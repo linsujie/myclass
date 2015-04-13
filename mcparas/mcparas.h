@@ -26,15 +26,6 @@ public:
   int setgalprop(Galprop *galprop);
   int setpara(double *p_);
 
-  void elec_setpara_pre(double *p, inject_mode bks, bool with_proton, dm_mode dmm, pppc_or_us pc);
-  int elec_setpara(double *p, inject_mode bks, double *branches,
-                   bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
-  int elec_setpara(double *p, inject_mode bks, anaspec::branch_choice bran,
-                   bool with_proton = false, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
-
-  int elec_setpara(double *p, anaspec::branch_choice bran, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
-  int elec_setpara(double *p, double *branches, dm_mode dmm = annihilate, pppc_or_us pc = pppc);
-
   static unsigned getenum(const string &enum_name);
   int print() const;
 
