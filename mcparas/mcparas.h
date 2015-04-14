@@ -13,6 +13,8 @@ private:
 
 public:
 
+  enum mcparas_err { branch_out_of_range, set_branch_for_pulsar, mix_branch_out_of_range };
+
   const static std::vector < std::vector <std::string> > enum_names;
   const static std::vector <std::string> elec_runNumber, prot_runNumber, BC_runNumber;
 
@@ -23,28 +25,30 @@ public:
   enum mix_branch { emutau, mutaub, emutaub, b3l };
 
   mcparas(Galprop *galprop);
-  int setgalprop(Galprop *galprop);
-  int setpara(double *p_);
+  int setgalprop(Galprop *galprop) throw();
+  int setpara(double *p_) throw();
 
   static unsigned getenum(const string &enum_name);
-  int print() const;
+  double getp() throw();
+  int print() const throw();
+  static int err_info(mcparas_err &err) throw();
 
-  int propagation_set_whole(prop_mode prop);
-  int propagation_set(prop_mode prop);
+  int propagation_set_whole(prop_mode prop) throw();
+  int propagation_set(prop_mode prop) throw();
 
-  int proton_set(inject_mode bks);
-  int proton_set();
+  int proton_set(inject_mode bks) throw();
+  int proton_set() throw();
 
-  int electron_set(inject_mode bks);
+  int electron_set(inject_mode bks) throw();
 
-  int exotic_set();
+  int exotic_set() throw();
 
-  int branch_set(anaspec::branch_choice branch) const;
-  int branch_set(double *branches) const;
-  int branch_set(mix_branch mixbran);
+  int branch_set(anaspec::branch_choice branch) const throw(mcparas_err);
+  int branch_set(double *branches) const throw(mcparas_err);
+  int branch_set(mix_branch mixbran) throw(mcparas_err);
 
-  int setdm(dm_mode dm, pppc_or_us pc) const;
+  int setdm(dm_mode dm, pppc_or_us pc) const throw();
 
-  int close_Z() const;
+  int close_Z() const throw();
 };
 #endif // for #ifndef _MCPARAS_H
