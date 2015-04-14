@@ -270,6 +270,7 @@ int mcparas::branch_set(mix_branch mixbran) {
 
 int mcparas::setpara(double *p_) {
   p = p_;
+  p_index = 0;
   return 0;
 }
 
