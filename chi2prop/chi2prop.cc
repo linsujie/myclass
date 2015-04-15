@@ -21,6 +21,9 @@ const vector <const char *> chi2prop::contriname = {"electrons", "secondary_elec
 
 chi2prop::chi2prop(): outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field) {
   SIZING(Fluxes);
+  cout << "sizes " << load_dat::fluxnum << " " << Fluxes.size() << endl;
+  cout << load_dat::iso_vectors << endl;
+  cout << "data name" << load_dat::data_name[3] << endl;
   SIZING(Fluxes_as);
 }
 
@@ -67,8 +70,8 @@ int chi2prop::get_by_name(double *Etmp, double *Ftmp, int ndat, load_dat:: fluxe
 int chi2prop::get_flux(load_dat::fluxes element) {
   if(!outdate[element]) return 0;
   else {
-    outdate[element] = false; 
-    outdate_solar[element] = true; 
+    outdate[element] = false;
+    outdate_solar[element] = true;
   }
 
   unsigned ndat=galpropmc->gcr[galpropmc->n_species-1].n_pgrid;
@@ -124,7 +127,7 @@ int chi2prop::solar_modulas(load_dat::fluxes element) {
   outdate_solar[element] = false;
 
   for(unsigned i = 0; i < Fluxes_as[element].size(); i++){
-    solar_modulas(element, i);    
+    solar_modulas(element, i);
   }
   return 1;
 }
@@ -141,14 +144,16 @@ int chi2prop::solar_modulas(load_dat::choice chc) {
 }
 
 spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors) const {
+  printDebugMsg("Routine", ">>sum_elements")
   spectrum res;
 
-  for(unsigned i = 0; i < elevectors.size(); i++) {
+  for(unsigned i = 0; i < elevectors.size(); i++)
     for(unsigned i_iso = 0; i_iso < Fluxes[elevectors[i]].size(); i_iso++)
       if(0 == i && 0 == i_iso) res = get_spec(elevectors[i], i_iso);
       else res += get_spec(elevectors[i], i_iso);
-  }
+
   return res;
+  printDebugMsg("Routine", "<<sum_elements")
 }
 
 spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors, unsigned i_phi) const {
@@ -246,7 +251,7 @@ double chi2prop::calc_chi2(load_dat::choice chc, const spectrum &spec, const vec
     if(pflag) cout<<"#chi2 is: "<<tmpchi2<<endl;
     subsum += tmpchi2;
   }
-  printDebugMsg("Routine", "<<calc_chi2: %f", subsum); 
+  printDebugMsg("Routine", "<<calc_chi2: %f", subsum);
   return subsum;
 }
 
@@ -255,11 +260,14 @@ double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc){
 
   get_flux(chc);
   solar_modulas(chc);
-  
+
   spectrum spec, specns;
 
   if(pflag) {
+    cout << "choice " << chc << endl;
+    //cout << "subtable " << load_dat::sub_table[chc] << endl;
     specns = sum_elements(load_dat::sub_table[chc]);
+    cout << "not here" << endl;
     if(unsigned(chc) < load_dat::deno_table.size()) specns /= sum_elements(load_dat::deno_table[chc]);
   }
 

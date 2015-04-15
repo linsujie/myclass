@@ -5,7 +5,7 @@
 #include "Galdef.h"
 #include "Spectrum.h"
 #include "Distribution.h"
-#include "Particle.h"  
+#include "Particle.h"
 #include "Galaxy.h"
 #include "Galprop.h" // AWS20050816
 #include"galprop_internal.h"
