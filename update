@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./configure -cs b
+./configure -cs b # -d -l anaspec_pppc
 make
 make install
 

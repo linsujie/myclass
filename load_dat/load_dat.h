@@ -23,7 +23,7 @@ public:
   int print() const;
 };
 
-enum ppexpname { ppBESSPolar, ppBESSTeV, ppBESS00, ppBESS99, ppHEAT, ppPAMELA0806, ppPAMELA0812, ppPAMELA09 };
+enum ppexpname { ppBESSPolar, ppBESSTeV, ppBESS00, ppBESS99, ppHEAT, ppPAMELA0806, ppPAMELA0812, ppPAMELA09, ppAMSpre };
 enum carbexpname {carbACE97,carbACE98,carbACE01,carbACE09,carbATIC0203,carbBalloon91,carbCREAM205,carbTRACER06};
 enum eleexpname {elePAMELA, eleAMS02, eleAMS02enlarge, eleAMS025GV, eleAMS0210GV, eleAMS2014, eleAMS20141GV};
 enum totexpname {totFH, totAMS02, totAMS025GV, totAMS0210GV, totAMS2014, totAMS20141GV};
