@@ -37,53 +37,55 @@ double mcparas::getp() throw() {
 }
 
 int mcparas::print() const throw() {
-  cout << "D0_xx :\t"            << galdef->D0_xx           << endl
-    << "eta :\t"              << galdef->eta             << endl
-    << "D_rigid_br :\t"       << galdef->D_rigid_br      << endl
-    << "D_g_1 :\t"            << galdef->D_g_1           << endl
-    << "D_g_2 :\t"            << galdef->D_g_2           << endl
-    << "z_max :\t"            << galdef->z_max           << endl
-    << "convection :\t"       << galdef->convection      << endl
-    << "dvdz_conv :\t"        << galdef->dvdz_conv       << endl
-    << "diff_reacc:\t"        << galdef->diff_reacc      << endl
-    << "v_Alfven :\t"         << galdef->v_Alfven        << endl
-    << "nuc_rigid_br :\t"     << galdef->nuc_rigid_br    << endl
-    << "nuc_g_1 :\t"          << galdef->nuc_g_1         << endl
-    << "nuc_g_2 :\t"          << galdef->nuc_g_2         << endl
-    << "proton_norm_flux :\t" << galdef->proton_norm_flux << endl
-    << "electron_norm_flux :\t" << galdef->electron_norm_flux << endl
-    << "electron_g_0 :\t" << galdef->electron_g_0 << endl
-    << "electron_rigid_br0 :\t" << galdef->electron_rigid_br0 << endl
-    << "electron_g_1 :\t" << galdef->electron_g_1 << endl
-    << "electron_rigid_br :\t" << galdef->electron_rigid_br << endl
-    << "electron_g_2 :\t" << galdef->electron_g_2 << endl
-    << "DM_NFW_rho0  :\t" << galdef->DM_NFW_rho0  << endl
-    << "DM_NFW_rs    :\t" << galdef->DM_NFW_rs    << endl
-    << "DM_NFW_gamma :\t" << galdef->DM_NFW_gamma << endl
-    << "DM_int0 :\t" << galdef->DM_int0 << endl
-    << "DM_int1 :\t" << galdef->DM_int1 << endl
-    << "DM_double0 :\t" << galdef->DM_double0 << endl
-    << "DM_double1 :\t" << galdef->DM_double1 << endl
-    << "DM_double2 :\t" << galdef->DM_double2 << endl
-    << "DM_double3 :\t" << galdef->DM_double3 << endl
-    << "DM_double4 :\t" << galdef->DM_double4 << endl
-    << "DM_double5 :\t" << galdef->DM_double5 << endl
-    << "DM_double6 :\t" << galdef->DM_double6 << endl
-    << "DM_double7 :\t" << galdef->DM_double7 << endl
-    << "DM_double8 :\t" << galdef->DM_double8 << endl
-    << "DM_double9 :\t" << galdef->DM_double9 << endl
-    << "DM_double10 :\t" << galdef->DM_double10 << endl
-    << "DM_double11 :\t" << galdef->DM_double11 << endl
-    << "DM_double12 :\t" << galdef->DM_double12 << endl
-    << "DM_double13 :\t" << galdef->DM_double13 << endl
-    << "DM_double14 :\t" << galdef->DM_double14 << endl
-    << "primary_DM_positron :\t" << galdef->primary_DM_positron << endl
-    << "primary_DM_electron :\t" << galdef->primary_DM_electron << endl
-    << "primary_electrons :\t" << galdef->primary_electrons << endl
-    << "secondary_positrons :\t" << galdef->secondary_positrons << endl
-    << "secondary_electrons :\t" << galdef->secondary_electrons << endl
-    << "secondary_protons :\t" << galdef->secondary_protons << endl
-    << "max_Z :\t" << galdef->max_Z << endl;
+  cout << "D0_xx :\t"               << galdef->D0_xx                 << endl
+    << "eta :\t"                    << galdef->eta                   << endl
+    << "D_rigid_br :\t"             << galdef->D_rigid_br            << endl
+    << "D_g_1 :\t"                  << galdef->D_g_1                 << endl
+    << "D_g_2 :\t"                  << galdef->D_g_2                 << endl
+    << "z_max :\t"                  << galdef->z_max                 << endl
+    << "convection :\t"             << galdef->convection            << endl
+    << "dvdz_conv :\t"              << galdef->dvdz_conv             << endl
+    << "diff_reacc:\t"              << galdef->diff_reacc            << endl
+    << "v_Alfven :\t"               << galdef->v_Alfven              << endl
+    << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
+    << "nuc_g_1 :\t"                << galdef->nuc_g_1               << endl
+    << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
+    << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
+    << "electron_norm_flux :\t"     << galdef->electron_norm_flux    << endl
+    << "electron_g_0 :\t"           << galdef->electron_g_0          << endl
+    << "electron_rigid_br0 :\t"     << galdef->electron_rigid_br0    << endl
+    << "electron_g_1 :\t"           << galdef->electron_g_1          << endl
+    << "electron_rigid_br :\t"      << galdef->electron_rigid_br     << endl
+    << "electron_g_2 :\t"           << galdef->electron_g_2          << endl
+    << "DM_NFW_rho0  :\t"           << galdef->DM_NFW_rho0           << endl
+    << "DM_NFW_rs    :\t"           << galdef->DM_NFW_rs             << endl
+    << "DM_NFW_gamma :\t"           << galdef->DM_NFW_gamma          << endl
+    << "DM_int0 :\t"                << galdef->DM_int0               << endl
+    << "DM_int1 :\t"                << galdef->DM_int1               << endl
+    << "DM_double0 :\t"             << galdef->DM_double0            << endl
+    << "DM_double1 :\t"             << galdef->DM_double1            << endl
+    << "DM_double2 :\t"             << galdef->DM_double2            << endl
+    << "DM_double3 :\t"             << galdef->DM_double3            << endl
+    << "DM_double4 :\t"             << galdef->DM_double4            << endl
+    << "DM_double5 :\t"             << galdef->DM_double5            << endl
+    << "DM_double6 :\t"             << galdef->DM_double6            << endl
+    << "DM_double7 :\t"             << galdef->DM_double7            << endl
+    << "DM_double8 :\t"             << galdef->DM_double8            << endl
+    << "DM_double9 :\t"             << galdef->DM_double9            << endl
+    << "DM_double10 :\t"            << galdef->DM_double10           << endl
+    << "DM_double11 :\t"            << galdef->DM_double11           << endl
+    << "DM_double12 :\t"            << galdef->DM_double12           << endl
+    << "DM_double13 :\t"            << galdef->DM_double13           << endl
+    << "DM_double14 :\t"            << galdef->DM_double14           << endl
+    << "primary_DM_positron :\t"    << galdef->primary_DM_positron   << endl
+    << "primary_DM_electron :\t"    << galdef->primary_DM_electron   << endl
+    << "primary_electrons :\t"      << galdef->primary_electrons     << endl
+    << "secondary_positrons :\t"    << galdef->secondary_positrons   << endl
+    << "secondary_electrons :\t"    << galdef->secondary_electrons   << endl
+    << "secondary_protons :\t"      << galdef->secondary_protons     << endl
+    << "secondary_antiprotons :\t"  << galdef->secondary_antiprotons << endl
+    << "tertiary_antiprotons: \t"   << galdef->tertiary_antiprotons  << endl
+    << "max_Z :\t"                  << galdef->max_Z                 << endl;
   return 0;
 }
 
@@ -351,4 +353,12 @@ int mcparas::close_Z() const throw() {
   galdef->secondary_positrons = 0;
   galdef->secondary_electrons = 0;
   return 0;
+}
+
+Galdef* mcparas::getpoint() const throw() {
+  return galdef;
+}
+
+unsigned mcparas::np() const throw() {
+  return p_index;
 }

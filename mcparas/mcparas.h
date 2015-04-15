@@ -50,5 +50,7 @@ public:
   int setdm(dm_mode dm, pppc_or_us pc) const throw();
 
   int close_Z() const throw();
+  Galdef* getpoint() const throw();
+  unsigned np() const throw();
 };
 #endif // for #ifndef _MCPARAS_H
