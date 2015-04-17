@@ -47,21 +47,25 @@ int mcparas::print() const throw() {
     << "dvdz_conv :\t"              << galdef->dvdz_conv             << endl
     << "diff_reacc:\t"              << galdef->diff_reacc            << endl
     << "v_Alfven :\t"               << galdef->v_Alfven              << endl
+    << endl
     << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
     << "nuc_g_1 :\t"                << galdef->nuc_g_1               << endl
     << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
     << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
+    << endl
     << "electron_norm_flux :\t"     << galdef->electron_norm_flux    << endl
     << "electron_g_0 :\t"           << galdef->electron_g_0          << endl
     << "electron_rigid_br0 :\t"     << galdef->electron_rigid_br0    << endl
     << "electron_g_1 :\t"           << galdef->electron_g_1          << endl
     << "electron_rigid_br :\t"      << galdef->electron_rigid_br     << endl
     << "electron_g_2 :\t"           << galdef->electron_g_2          << endl
+    << endl
     << "DM_NFW_rho0  :\t"           << galdef->DM_NFW_rho0           << endl
     << "DM_NFW_rs    :\t"           << galdef->DM_NFW_rs             << endl
     << "DM_NFW_gamma :\t"           << galdef->DM_NFW_gamma          << endl
     << "DM_int0 :\t"                << galdef->DM_int0               << endl
     << "DM_int1 :\t"                << galdef->DM_int1               << endl
+    << endl
     << "DM_double0 :\t"             << galdef->DM_double0            << endl
     << "DM_double1 :\t"             << galdef->DM_double1            << endl
     << "DM_double2 :\t"             << galdef->DM_double2            << endl
@@ -77,8 +81,10 @@ int mcparas::print() const throw() {
     << "DM_double12 :\t"            << galdef->DM_double12           << endl
     << "DM_double13 :\t"            << galdef->DM_double13           << endl
     << "DM_double14 :\t"            << galdef->DM_double14           << endl
+    << endl
     << "primary_DM_positron :\t"    << galdef->primary_DM_positron   << endl
     << "primary_DM_electron :\t"    << galdef->primary_DM_electron   << endl
+    << "primary_DM_antip :\t"       << galdef->primary_DM_antip      << endl
     << "primary_electrons :\t"      << galdef->primary_electrons     << endl
     << "secondary_positrons :\t"    << galdef->secondary_positrons   << endl
     << "secondary_electrons :\t"    << galdef->secondary_electrons   << endl
@@ -89,7 +95,7 @@ int mcparas::print() const throw() {
   return 0;
 }
 
-int mcparas::err_info(mcparas_err &err) throw() {
+int mcparas::err_info(errtype &err) throw() {
   switch(err) {
   case branch_out_of_range:
     cout << "mcparas:: The required branch choice out of range" << endl;
@@ -259,7 +265,7 @@ int mcparas::exotic_set() throw() {
   return 0;
 }
 
-int mcparas::branch_set(anaspec::branch_choice branch) const throw(mcparas_err) {
+int mcparas::branch_set(anaspec::branch_choice branch) const throw(errtype) {
   if(branch >= anaspec::branch_num) {
     throw(branch_out_of_range);
   }
@@ -270,7 +276,7 @@ int mcparas::branch_set(anaspec::branch_choice branch) const throw(mcparas_err) 
     return branch_set(bran);
 }
 
-int mcparas::branch_set(double *branches) const throw(mcparas_err) {
+int mcparas::branch_set(double *branches) const throw(errtype) {
   if (galdef->DM_int0 == pulsar) throw(set_branch_for_pulsar); // Don't initial the branch in the pulsar case;
 
   galdef->DM_double2 = branches[0];
@@ -288,7 +294,7 @@ int mcparas::branch_set(double *branches) const throw(mcparas_err) {
   return 0;
 }
 
-int mcparas::branch_set(mix_branch mixbran) throw(mcparas_err) {
+int mcparas::branch_set(mix_branch mixbran) throw(errtype) {
   //setting the branches for mixing branch cases, return 1 if the inputed parameters are inappropriate;
   double *point = p + p_index,
          branches[anaspec::branch_num] = { 0 };
