@@ -21,9 +21,6 @@ const vector <const char *> chi2prop::contriname = {"electrons", "secondary_elec
 
 chi2prop::chi2prop(): outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field) {
   SIZING(Fluxes);
-  cout << "sizes " << load_dat::fluxnum << " " << Fluxes.size() << endl;
-  cout << load_dat::iso_vectors << endl;
-  cout << "data name" << load_dat::data_name[3] << endl;
   SIZING(Fluxes_as);
 }
 
