@@ -4,14 +4,12 @@ recording, dealing with and printing a spectrum easily
 #ifndef _SPECTURM_H
 #define _SPECTURM_H
 #include<string>
+#include<sstream>
 #include"gfunction.h"
 
 class spectrum {
 private:
   int ini_check() const;
-  int print(FILE *stream) const;
-  int comp(const spectrum &another, FILE *stream) const;
-  int compare(const spectrum &another, FILE *stream) const;
   inline int clear_lab();
   inline int clear_spec();
 public:
@@ -28,15 +26,16 @@ public:
   int ini(const std::vector <double> &E_, const std::vector <double> &F_);
   int ini(double Es_, double Ee_, double factor_);
 
-  int comp(const spectrum &another) const;
-  int comp(const spectrum &another, const std::string &filename) const;
-  //int comp(const spectrum &another, char *filename) const;
-  int compare(const spectrum &another) const;
-  int compare(const spectrum &another, const std::string &filename) const;
-  //int compare(const spectrum &another, char *filename) const;
-  int print() const;
-  int print(const std::string &filename) const;
-  //int print(const char *filename) const;
+  int print(std::ostringstream &os) const;
+  int comp(const spectrum &another, std::ostringstream &os) const;
+  int compare(const spectrum &another, std::ostringstream &os) const;
+
+  int print(const std::string &filename = "null") const;
+  int comp(const spectrum &another, const std::string &filename = "null") const;
+  int compare(const spectrum &another, const std::string &filename = "null") const;
+
+  int dealoutput(const std::string &filename, const std::ostringstream &os) const;
+
   int dealing(gfunction *func);
   int add(const spectrum &rhs);
   int substra(const spectrum &rhs);

@@ -112,6 +112,36 @@ int mcparas::err_info(errtype &err) throw() {
   return 0;
 }
 
+int mcparas::propagation_set_yuan(prop_mode prop) throw() {
+  double *point = p + p_index;
+
+  galdef->D0_xx = point[0] * 1e28;
+  galdef->D_g_1 = point[1];
+  galdef->D_g_2 = point[1];
+  galdef->z_max = point[2];
+  galdef->z_min = -point[2];
+  galdef->dz = point[2] / 20;
+  galdef->D_rigid_br = 4 * 1e3;
+  galdef->v_Alfven = point[3];
+  galdef->dvdz_conv = point[4];
+
+  galdef->eta = 1;
+
+  if(DR2 == prop) galdef->eta = -0.4;
+  if(DC2 == prop) {
+    galdef->D_g_1 = 0;
+    galdef->D_rigid_br = point[3] * 1e3;
+  }
+
+  const vector <int> convection = {0, 1, 0, 1, 0, 1},
+        diff_reacc = {0 ,0, 1, 0, 1, 1};
+  galdef->convection = convection[prop];
+  galdef->diff_reacc = diff_reacc[prop];
+
+  p_index += 5;
+  return 0;
+}
+
 int mcparas::propagation_set_whole(prop_mode prop) throw() {
   double *point = p + p_index;
 

@@ -33,6 +33,7 @@ public:
   int print() const throw();
   static int err_info(errtype &err) throw();
 
+  int propagation_set_yuan(prop_mode prop) throw();
   int propagation_set_whole(prop_mode prop) throw();
   int propagation_set(prop_mode prop) throw();
 

@@ -3,6 +3,7 @@
 #include<fstream>
 #include<cmath>
 #include<cstdlib>
+#include<iomanip>
 #include"spectrum.h"
 #include"interp.h"
 #include"oformat.h"
@@ -10,10 +11,15 @@
 using std::vector;
 using std::string;
 using std::istringstream;
+using std::ostringstream;
 using std::ifstream;
+using std::ofstream;
 using std::abs;
 using std::cout;
 using std::endl;
+using std::ios;
+using std::setiosflags;
+using std::setprecision;
 
 spectrum::spectrum() {}
 spectrum::spectrum(double *E_, double *F_, unsigned num): E(E_, E_ + num), F(F_, F_ + num), Es(0), Ee(0), factor(0) {}
@@ -112,60 +118,51 @@ int spectrum::ini_check() const {
   return 0;
 }
 
-#define STREAM_GUI(functions)\
-  FILE *stream;\
-  stream=fopen(filename.c_str(), "w");\
-  functions;\
-  fclose(stream);\
-  return 0
-
-int spectrum::comp(const spectrum &another, FILE *stream) const {
+int spectrum::comp(const spectrum &another, ostringstream &os) const {
   if (E.size() != another.E.size()) {
-    compare(another, stream);
+    compare(another, os);
 
   } else {
-    fprintf(stream, "#\tE\tF1\tF2\n");
-
+    os << "#\tE\tF1\tF2" << endl;
+    os << setiosflags(ios::scientific) << setprecision(6);
     for (unsigned i = 0; i < E.size(); i++)
-      fprintf(stream, FORMATE3, E[i], F[i], another.F[i]);
+      os << E[i] << "\t" << F[i] << "\t" << another.F[i] << endl;
   }
-
   return 0;
-}
-int spectrum::comp(const spectrum &another) const {
-  return comp(another, stdout);
 }
 int spectrum::comp(const spectrum &another, const string &filename) const {
-  STREAM_GUI(comp(another, stream));
+  ostringstream os;
+  comp(another, os);
+  return dealoutput(filename, os);
 }
 
-int spectrum::compare(const spectrum &another, FILE *stream) const {
+int spectrum::compare(const spectrum &another, ostringstream &os) const {
   interp intp(another.E, another.F);
-  fprintf(stream, "#\tE\tF1\tF2\n");
 
+  os << "#\tE\tF1\tF2" << endl;
+  os << setiosflags(ios::scientific) << setprecision(6);
   for (unsigned i = 0; i < E.size(); i++)
-    fprintf(stream, FORMATE3, E[i], F[i], intp.lnask(E[i]));
+    os << E[i] << "\t" << F[i] << "\t" << intp.lnask(E[i]) << endl;
 
   return 0;
-}
-int spectrum::compare(const spectrum &another) const {
-  return compare(another, stdout);
 }
 int spectrum::compare(const spectrum &another, const string &filename) const {
-  STREAM_GUI(comp(another, stream));
+  ostringstream os;
+  compare(another, os);
+  return dealoutput(filename, os);
 }
 
-int spectrum::print(FILE *stream) const {
+int spectrum::print(ostringstream &os) const {
+  os << setiosflags(ios::scientific) << setprecision(6);
   for (unsigned i = 0; i < E.size(); i++)
-    fprintf(stream, FORMATE2, E[i], F[i]);
+    os << E[i] << "\t" << F[i] << endl;
 
   return 0;
 }
-int spectrum::print() const {
-  return print(stdout);
-}
 int spectrum::print(const string &filename) const {
-  STREAM_GUI(print(stream));
+  ostringstream os;
+  print(os);
+  return dealoutput(filename, os);
 }
 
 int spectrum::dealing(gfunction *func) {
@@ -251,6 +248,16 @@ double spectrum::min() const {
   return minflux;
 }
 
+int spectrum::dealoutput(const string &filename, const ostringstream &os) const {
+  if(filename == "null") cout << os.str();
+  else {
+    ofstream of(filename);
+    of << os.str();
+    of.close();
+  }
+  return 0;
+}
+
 spectrum& spectrum::operator=(const spectrum& rhs) {
   Es = rhs.Es;
   Ee = rhs.Ee;
@@ -264,7 +271,7 @@ spectrum& spectrum::operator=(const spectrum& rhs) {
 #define IS_DIVIDE(stms,rhs,res)\
   if(rhs==0) res=0;\
   else stms\
-     
+
 #define OPERFUNC(opers,operse,div_or_not)\
   spectrum operator opers(const double &lhs,const spectrum &rhs){\
     spectrum result(rhs);\

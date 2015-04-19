@@ -1,5 +1,6 @@
 #ifndef _CHI2PROP_H
 #define _CHI2PROP_H
+#include<sstream>
 #include"ErrorLogger.h"
 #include "Configure.h"
 #include "Galdef.h"
@@ -40,8 +41,8 @@ private:
   int solar_modulas(load_dat::fluxes element, unsigned iso);
   spectrum sum_elements(const vector <load_dat::fluxes> &elevectors) const;
   spectrum sum_elements(const vector <load_dat::fluxes> &elevectors, unsigned iphi) const;
-  int print_lines(load_dat::choice chc, double phi, const spectrum &spec, const spectrum &specns) const;
-  double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, bool main_title) const;
+  int print_lines(load_dat::choice chc, double phi, const spectrum &spec, const spectrum &specns, ostringstream &tmpout) const;
+  double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, bool main_title, ostringstream &tmpout) const;
   spectrum flux_for_print(load_dat::fluxes flux, int iso, int i_phi);
 
   int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
@@ -56,18 +57,11 @@ public:
   int setkeep(vector <load_dat::fluxes> &keep_);
   int setpara(double *p, model_kind mod);
 
-  double chi2(const vector <vector <int> > &exn, load_dat::choice choice);
-  double chi2(const vector <double> &phi_, const vector <vector <int> > &exn, load_dat::choice choice);
-  double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag_);
-  double chi2(const vector <double> &phi_, const vector <vector <int> > &exn, load_dat::choice choice, bool pflag_);
+  double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outfilename = "null", ios_base::openmode outmode = ios_base::out);
 
-  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi);
-  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso);
-  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux);
+  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso = -1, int i_phi = -1);
 
-  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso, int i_phi);
-  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso);
-  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom);
+  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso = -1, int i_phi = -1);
 
   int start(int iter);
   int run();
