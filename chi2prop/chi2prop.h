@@ -51,7 +51,7 @@ public:
   static Galprop *galpropmc;
   enum solar_type {spherical, force_field};
   solar_type stype;
-  double cposi;
+  double cposi, cpbar;
   chi2prop();
   int setphi(const vector <double> &phi_);
   int setkeep(vector <load_dat::fluxes> &keep_);

@@ -37,6 +37,7 @@ int chi2prop::setkeep(vector <load_dat::fluxes> &keep_) {
 inline spectrum chi2prop::get_spec(load_dat::fluxes element, unsigned i_iso) const {
   printDebugMsg("Check cposi", "rescale with cposi: %g", cposi);
   if((element == load_dat::secelecs || element == load_dat::secposis) && i_iso == 0) return cposi * Fluxes[element][0];
+  if((element == load_dat::secantip) && i_iso == 0) return cpbar * Fluxes[element][0];
   else return Fluxes[element][i_iso];
 }
 
