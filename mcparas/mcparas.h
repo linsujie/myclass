@@ -26,7 +26,7 @@ public:
 
   mcparas(Galprop *galprop);
   int setgalprop(Galprop *galprop) throw();
-  int setpara(double *p_) throw();
+  int setpara(const double *p_) throw();
 
   static unsigned getenum(const string &enum_name);
   double getp() throw();

@@ -25,7 +25,7 @@ int mcparas::setgalprop(Galprop *galprop) throw() {
   return 0;
 }
 
-int mcparas::setpara(double *p_) throw() {
+int mcparas::setpara(const double *p_) throw() {
   p = p_;
   p_index = 0;
   return 0;
