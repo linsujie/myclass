@@ -113,7 +113,7 @@ int mcparas::err_info(errtype &err) throw() {
 }
 
 int mcparas::propagation_set_yuan(prop_mode prop) throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
 
   galdef->D0_xx = point[0] * 1e28;
   galdef->D_g_1 = point[1];
@@ -143,7 +143,7 @@ int mcparas::propagation_set_yuan(prop_mode prop) throw() {
 }
 
 int mcparas::propagation_set_whole(prop_mode prop) throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
 
   galdef->D0_xx = point[0] * 1e28;
   galdef->D_g_1 = point[1];
@@ -173,7 +173,7 @@ int mcparas::propagation_set_whole(prop_mode prop) throw() {
 }
 
 int mcparas::propagation_set(prop_mode prop) throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
   unsigned tmpind = 0;
 
   galdef->D0_xx = point[0] * 1e28;
@@ -216,7 +216,7 @@ int mcparas::propagation_set(prop_mode prop) throw() {
 }
 
 int mcparas::proton_set(inject_mode bks) throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
   galdef->nuc_g_1 = point[0];
 
   switch(bks) {
@@ -239,7 +239,7 @@ int mcparas::proton_set(inject_mode bks) throw() {
 }
 
 int mcparas::proton_set() throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
 
   galdef->proton_norm_flux = pow(10, point[0]);
   galdef->nuc_g_1 = point[1];
@@ -250,7 +250,7 @@ int mcparas::proton_set() throw() {
 }
 
 int mcparas::electron_set(inject_mode bks) throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
 
   galdef->electron_norm_flux = pow(10, point[0]);
 
@@ -279,7 +279,7 @@ int mcparas::electron_set(inject_mode bks) throw() {
 }
 
 int mcparas::exotic_set() throw() {
-  double *point = p + p_index;
+  const double *point = p + p_index;
 
   galdef->DM_double0 = pow(10, point[0]);
 
@@ -326,8 +326,8 @@ int mcparas::branch_set(double *branches) const throw(errtype) {
 
 int mcparas::branch_set(mix_branch mixbran) throw(errtype) {
   //setting the branches for mixing branch cases, return 1 if the inputed parameters are inappropriate;
-  double *point = p + p_index,
-         branches[anaspec::branch_num] = { 0 };
+  const double *point = p + p_index;
+  double branches[anaspec::branch_num] = { 0 };
   double x, y, z, sqsum, denom;
 
   switch(mixbran) {

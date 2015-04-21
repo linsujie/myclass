@@ -8,7 +8,7 @@
 class mcparas {
 private:
   unsigned p_index;
-  double *p;
+  const double *p;
   Galdef *galdef;
 
 public:
