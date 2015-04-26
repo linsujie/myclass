@@ -48,8 +48,10 @@ int mcparas::print() const throw() {
     << "diff_reacc:\t"              << galdef->diff_reacc            << endl
     << "v_Alfven :\t"               << galdef->v_Alfven              << endl
     << endl
-    << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
+    << "nuc_g_0 :\t"                << galdef->nuc_g_0               << endl
+    << "nuc_rigid_br0 :\t"          << galdef->nuc_rigid_br0         << endl
     << "nuc_g_1 :\t"                << galdef->nuc_g_1               << endl
+    << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
     << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
     << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
     << endl
