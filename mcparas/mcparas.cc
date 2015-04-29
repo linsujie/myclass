@@ -48,8 +48,10 @@ int mcparas::print() const throw() {
     << "diff_reacc:\t"              << galdef->diff_reacc            << endl
     << "v_Alfven :\t"               << galdef->v_Alfven              << endl
     << endl
-    << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
+    << "nuc_g_0 :\t"                << galdef->nuc_g_0               << endl
+    << "nuc_rigid_br0 :\t"          << galdef->nuc_rigid_br0         << endl
     << "nuc_g_1 :\t"                << galdef->nuc_g_1               << endl
+    << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
     << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
     << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
     << endl
@@ -217,10 +219,10 @@ int mcparas::propagation_set(prop_mode prop) throw() {
 
 int mcparas::proton_set(inject_mode bks) throw() {
   const double *point = p + p_index;
-  galdef->nuc_g_1 = point[0];
 
   switch(bks) {
   case nbk:
+    galdef->nuc_g_1 = point[0];
     galdef->nuc_g_2 = point[0];
     galdef->nuc_rigid_br = 10 * 1e3;
     galdef->proton_norm_flux = point[1] * 1e-9;
@@ -228,12 +230,21 @@ int mcparas::proton_set(inject_mode bks) throw() {
     break;
 
   case onebk:
-  case twobk:
+    galdef->nuc_g_1 = point[0];
     galdef->nuc_g_2 = point[1];
     galdef->nuc_rigid_br = point[2] * 1e3;
     galdef->proton_norm_flux = point[3] * 1e-9;
     p_index += 4;
     break;
+
+  case twobk:
+    galdef->nuc_g_0 = point[0];
+    galdef->nuc_rigid_br0 = point[1] * 1e3;
+    galdef->nuc_g_1 = point[2];
+    galdef->nuc_rigid_br = point[3] * 1e3;
+    galdef->nuc_g_2 = point[4];
+    galdef->proton_norm_flux = point[5] * 1e-9;
+    p_index = 6;
   }
   return 0;
 }
