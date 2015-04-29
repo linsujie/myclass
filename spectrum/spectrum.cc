@@ -34,7 +34,7 @@ spectrum::spectrum(double Es_, double Ee_, double factor_):
     F.push_back(0);
   }
 }
-spectrum::spectrum(const char *filename): Es(0), Ee(0), factor(0) {
+spectrum::spectrum(const string &filename): Es(0), Ee(0), factor(0) {
   const char annota[2] = "#";
   string line;
   double tmp;

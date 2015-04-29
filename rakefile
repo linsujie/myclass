@@ -1,0 +1,11 @@
+require 'rake/loaders/makefile'
+
+DLIST = FileList['mcparas']
+DEBUG = '-DDEBUG_TO_FILE'
+PREFIX = "#{Dir.home}"
+STATIC = true
+
+CC = 'g++'
+CFLAG = '-std=c++0x -Wall -g -O2'
+
+import("main.rake")
