@@ -36,7 +36,7 @@ COLLEC = STATIC ? 'ar crs' : "#{CC} #{CFLAG} -shared -fPIC -o"
 
 TASKLIST.each do |grp|
   desc "Generating lib#{grp}"
-  task "#{grp}" => OBJS[grp] do
+  multitask "#{grp}" => OBJS[grp] do
     sys("#{COLLEC} #{target.call(grp)} #{OBJS[grp].to_s}")
   end
 end
@@ -45,10 +45,11 @@ desc 'Installing the libraries'
 task :install do
   incfile = WINC.map { |x| "#{x}/#{x}.h" }.to_s
 
-  ins = [[incfile, "#{PREFIX}/include"], [CLOBBER.to_s, "#{PREFIX}/lib"]] + \
-  DATALIST.map { |c| ["#{c}/#{c}_data/*", "#{PREFIX}/lib/#{c}_data"] }
+  ins = [[incfile, "#{PREFIX}/include"]] + \
+    CLOBBER.map { |x| File.exist?(x) && [x, "#{PREFIX}/lib"] } + \
+    DATALIST.map { |c| ["#{c}/#{c}_data/*", "#{PREFIX}/lib/#{c}_data"] }
 
-  ins.each do |o, t|
+  ins.select { |x| x }.each do |o, t|
     FileUtils.mkdir_p(t)
     sys("install -D #{o} #{t}")
   end
@@ -57,7 +58,9 @@ end
 rule '.o' => '.cc' do |t|
   cls = t.name.sub(%r{\w+/(\w+).o$}, '\1')
   dbg = DLIST.include?(cls) ? DEBUG : nil
-  dat = DATALIST.include?(cls) ? "-D DATADIR='#{PREFIX}/lib/#{cls}_data'" : ''
+  datdir = %Q(-D DATDIR=\\"#{PREFIX}/lib/#{cls}_data\\")
+  dat = DATALIST.include?(cls) ? datdir : ''
+
   inc = WINC.map { |x| "-I #{x}" }
   sys("#{CC} #{CFLAG} #{dbg} #{dat} #{inc} -c -fPIC #{t.source} -o #{t.name}")
 end
