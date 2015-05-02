@@ -244,7 +244,7 @@ int mcparas::proton_set(inject_mode bks) throw() {
     galdef->nuc_rigid_br = point[3] * 1e3;
     galdef->nuc_g_2 = point[4];
     galdef->proton_norm_flux = point[5] * 1e-9;
-    p_index = 6;
+    p_index += 6;
   }
   return 0;
 }
