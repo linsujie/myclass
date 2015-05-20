@@ -7,18 +7,36 @@ using std::string;
 
 const vector <string> mcparas::elec_runNumber = { "mc_ele_PD", "mc_ele_DC", "mc_ele_DR", "mc_ele_DC2", "mc_ele_DR2", "mc_ele_DRC" },
       mcparas::BC_runNumber = { "mc_BC_PD", "mc_BC_DC", "mc_BC_DR", "mc_BC_DC2", "mc_BC_DR2", "mc_BC_DRC" },
-      mcparas::prot_runNumber = { "mc_prot_PD", "mc_prot_DC", "mc_prot_DR", "mc_prot_DC2", "mc_prot_DR2", "mc_prot_DRC" },
-      enum_name0 = {"pppc", "us"},
-      enum_name1 = { "pulsar", "annihilate", "decay" },
-      enum_name2 = { "PD", "DC", "DR", "DC2", "DR2", "DRC" },
-      enum_name3 = { "nbk", "onebk", "twobk" },
-      enum_name4 = { "emutau", "mutaub", "emutaub", "b3l" };
+      mcparas::prot_runNumber = { "mc_prot_PD", "mc_prot_DC", "mc_prot_DR", "mc_prot_DC2", "mc_prot_DR2", "mc_prot_DRC" };
 
-const vector <vector <string> > mcparas::enum_names = {enum_name0, enum_name1, enum_name2, enum_name3, enum_name4};
+#define NAME(TYPE) ENUMNAMECLS(TYPE, mcparas)
+#define X(a) #a,
+NAME(errtype) = {
+#include "enumdef/errtype.def"
+};
+NAME(pppc_or_us) = {
+#include "enumdef/pppc_or_us.def"
+};
+NAME(dm_mode) = {
+#include "enumdef/dm_mode.def"
+};
+NAME(prop_mode) = {
+#include "enumdef/prop_mode.def"
+};
+NAME(inject_mode) = {
+#include "enumdef/inject_mode.def"
+};
+NAME(mix_branch) = {
+#include "enumdef/mix_branch.def"
+};
+#undef X
+#undef NAME
+
+#define X(TYPE) ENUMANDSTR(mcparas::TYPE, mcparas::TYPE##_name)
+  X(errtype) X(pppc_or_us) X(dm_mode) X(prop_mode) X(inject_mode) X(mix_branch)
+#undef X
 
 mcparas::mcparas(Galprop *galprop): galdef(&(galprop->galdef)) {}
-
-GETENUM(mcparas)
 
 int mcparas::setgalprop(Galprop *galprop) throw() {
   galdef = &(galprop->galdef);
@@ -109,6 +127,10 @@ int mcparas::err_info(errtype &err) throw() {
 
   case mix_branch_out_of_range:
     cout << "mcparas:: The parameter for mix branches out of range" << endl;
+    break;
+
+  default:
+    cout << "mcparas:: unknown error" << endl;
     break;
   }
   return 0;
@@ -245,6 +267,9 @@ int mcparas::proton_set(inject_mode bks) throw() {
     galdef->nuc_g_2 = point[4];
     galdef->proton_norm_flux = point[5] * 1e-9;
     p_index += 6;
+
+  default:
+    break;
   }
   return 0;
 }
@@ -285,6 +310,9 @@ int mcparas::electron_set(inject_mode bks) throw() {
     galdef->electron_rigid_br = pow(10, point[4]);
     galdef->electron_g_2 = point[5];
     p_index += 6;
+
+  default:
+    break;
   }
   return 0;
 }
@@ -307,11 +335,11 @@ int mcparas::exotic_set() throw() {
 }
 
 int mcparas::branch_set(anaspec::branch_choice branch) const throw(errtype) {
-  if(branch >= anaspec::branch_num) {
+  if(branch >= anaspec::branch_choice_size) {
     throw(branch_out_of_range);
   }
 
-    double bran[anaspec::branch_num] = { 0 };
+    double bran[anaspec::branch_choice_size] = { 0 };
     bran[branch] = 1;
 
     return branch_set(bran);
@@ -338,7 +366,7 @@ int mcparas::branch_set(double *branches) const throw(errtype) {
 int mcparas::branch_set(mix_branch mixbran) throw(errtype) {
   //setting the branches for mixing branch cases, return 1 if the inputed parameters are inappropriate;
   const double *point = p + p_index;
-  double branches[anaspec::branch_num] = { 0 };
+  double branches[anaspec::branch_choice_size] = { 0 };
   double x, y, z, sqsum, denom;
 
   switch(mixbran) {
@@ -383,6 +411,9 @@ int mcparas::branch_set(mix_branch mixbran) throw(errtype) {
     branches[anaspec::bottom] = sqsum / (3 * denom);
     branches[anaspec::top] = sqsum / (3 * denom);
     p_index += 2;
+    break;
+
+  default:
     break;
   }
 

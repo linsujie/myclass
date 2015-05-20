@@ -1,6 +1,5 @@
 #include"anaspec.h"
 #include"mydebug.h"
-#include"enum_utils.h"
 #include<iostream>
 #include<sstream>
 #include<fstream>
@@ -14,35 +13,43 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-const string anaspec::prodname[ANASPEC_PROD_NUM] = { "posi", "pbar", "gamma", "nu", "deuterons" },
-    anaspec::braname[ANASPEC_BRANCH_NUM] = { "e", "mu", "tau", "ww", "uu", "cc", "bb", "tt", "foure", "fourmu", "fourtau" };
+const string anaspec::prodname[product_choice_size] = { "posi", "pbar", "gamma", "nu", "deuterons" },
+    anaspec::braname[branch_choice_size] = { "e", "mu", "tau", "ww", "uu", "cc", "bb", "tt", "foure", "fourmu", "fourtau" };
 
-const vector <string> enum_name0 = {"positron", "antiproton", "gamma", "nu", "deuterons"},
-      enum_name1 = {"electron", "mu", "tau", "W", "up", "charm", "bottom", "top", "four_e", "four_mu", "four_tau"};
+#define NAME(TYPE) ENUMNAMECLS(TYPE, anaspec)
+#define X(a) #a,
+NAME(product_choice) = {
+#include "enumdef/product_choice.def"
+};
+NAME(branch_choice) = {
+#include "enumdef/branch_choice.def"
+};
+#undef X
+#undef NAME
 
-const vector <vector <string> > anaspec::enum_names = { enum_name0, enum_name1 };
+#define X(TYPE) ENUMANDSTR(anaspec::TYPE, anaspec::TYPE##_name)
+X(product_choice) X(branch_choice)
+#undef X
 
-GETENUM(anaspec)
-
-const bool anaspec::newformat[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
+const bool anaspec::newformat[product_choice_size][branch_choice_size] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                         {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                         {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                         {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} },
-      anaspec::exist[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
+      anaspec::exist[product_choice_size][branch_choice_size] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                {0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} },
-      anaspec::withcum[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
+      anaspec::withcum[product_choice_size][branch_choice_size] = { {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                  {0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                  {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                  {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0},
                                                                  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
 #define BRANCHING\
-  for (int i = 0; i < ANASPEC_BRANCH_NUM; i++) branch[i] = branch_[i]
-#define INILOADED memset(loaded, false, ANASPEC_BRANCH_NUM * ANASPEC_PROD_NUM * sizeof(bool))
+  for (int i = 0; i < branch_choice_size; i++) branch[i] = branch_[i]
+#define INILOADED memset(loaded, false, branch_choice_size * product_choice_size * sizeof(bool))
 
 anaspec::anaspec() {
   INILOADED;
@@ -72,19 +79,13 @@ int anaspec::choose(anaspec::product_choice product_) {
   return 0;
 }
 
-double anaspec::ask(double E, double mdm) {
-  return ask(E, mdm, false);
-}
-
 double anaspec::ask(double E, double mdm, bool cumulate) {
   printDebugMsg("Routine", ">>ask: E, m_dm, cumulate = %f, %f, %d", E, mdm, cumulate);
   double sum = 0,
          realx;
   double upbound = newformat[product][0] ? 0.999999 : 0.9772;
-  //Interp2D (*tmptable)[ANASPEC_BRANCH_NUM];
-  //tmptable = cumulate ? cumutable : table;
 
-  for (int i = 0; i < ANASPEC_BRANCH_NUM; i++)
+  for (int i = 0; i < branch_choice_size; i++)
     if (exist[product][i] && branch[i]) {
       if (!loaded[product][i]) load(product, (anaspec::branch_choice)i);
       if (cumulate && withcum[product][i] && E / mdm > 1e-5) {

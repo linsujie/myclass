@@ -24,19 +24,16 @@ pppc::pppc_branch branch_map[] = {
 const vector <vector <pppc::pppc_product> > product_map = { {pppc::positrons}, {pppc::antiprotons}, {pppc::gammas}, {pppc::neutrinos_e, pppc::neutrinos_mu, pppc::neutrinos_tau}, {pppc::antideuterons} };
 const vector <vector <double> > product_norm = { {1}, {1}, {1}, {2.0/3, 2.0/3, 2.0/3}, {1} };
 
-anaspec_pppc::anaspec_pppc(): anaspec(), loaded(ANASPEC_PROD_NUM, false) { }
-anaspec_pppc::anaspec_pppc(anaspec::product_choice product_): anaspec(product_), loaded(ANASPEC_PROD_NUM, false) {
+anaspec_pppc::anaspec_pppc(): anaspec(), loaded(product_choice_size, false) { }
+anaspec_pppc::anaspec_pppc(anaspec::product_choice product_): anaspec(product_), loaded(product_choice_size, false) {
 }
-anaspec_pppc::anaspec_pppc(double *branch_, anaspec::product_choice product_): anaspec(branch_, product_), loaded(ANASPEC_PROD_NUM, false) {
+anaspec_pppc::anaspec_pppc(double *branch_, anaspec::product_choice product_): anaspec(branch_, product_), loaded(product_choice_size, false) {
 
 }
-anaspec_pppc::anaspec_pppc(const std::vector <double> &branch_, anaspec::product_choice product_): anaspec(branch_, product_), loaded(ANASPEC_PROD_NUM, false) {
+anaspec_pppc::anaspec_pppc(const std::vector <double> &branch_, anaspec::product_choice product_): anaspec(branch_, product_), loaded(product_choice_size, false) {
 
 }
 
-double anaspec_pppc::ask(double E, double mdm) {
-  return ask(E, mdm, false);
-}
 double anaspec_pppc::ask(double E, double mdm, bool cumulate) {
   printDebugMsg("Routine", ">>ask: E, m_dm, cumulate = %f, %f, %d", E, mdm, cumulate);
   double result = 0;
@@ -49,7 +46,7 @@ double anaspec_pppc::ask(double E, double mdm, bool cumulate) {
 double anaspec_pppc::pppc_ask(double E, double mdm, pppc::pppc_product prod, bool cumulate) {
   printDebugMsg("Routine", ">>pppc_ask: E, m_dm, cumulate = %f, %f, %d, %d", E, mdm, prod, cumulate);
   double result = 0, x = E/mdm, realx;
-  for (unsigned i = 0; i < ANASPEC_BRANCH_NUM; i++)
+  for (unsigned i = 0; i < branch_choice_size; i++)
     if(branch[i]) {
       if(cumulate && x > low_x) {
         realx = x > 1 ? 1 : x;
@@ -73,28 +70,28 @@ int anaspec_pppc::load(pppc::pppc_product prod) {
   ifstream dats(filename.c_str());
 
   string line;
-  Table2D tab[PPPC_BRANCH_NUM], cumtab[PPPC_BRANCH_NUM];
+  Table2D tab[pppc::pppc_branch_size], cumtab[pppc::pppc_branch_size];
   vector <double> xaxis, mass;
 
   getline(dats, line);
 
   int mind = -1, xind = -1;
-  double Nx[PPPC_BRANCH_NUM],
+  double Nx[pppc::pppc_branch_size],
          mold = 0, mnew, xnew, val; // xold = 0
   while (getline(dats, line)) {
     istringstream iss(line);
     iss >> mnew; iss >> xnew;
-    
+
     if (mnew != mold) {
       xind = -1;
       mind++;
       mass.push_back(mnew);
-      for (unsigned i = 0; i < PPPC_BRANCH_NUM; i++) Nx[i] = 0;
+      for (unsigned i = 0; i < pppc::pppc_branch_size; i++) Nx[i] = 0;
     }
     xind++;
     if (mind <= 0) xaxis.push_back(pow(10, xnew));
 
-    for (unsigned i_branch = 0; i_branch < PPPC_BRANCH_NUM; i_branch++) {
+    for (unsigned i_branch = 0; i_branch < pppc::pppc_branch_size; i_branch++) {
       iss >> val;
       double dndx = val / (xaxis[xind] * log(10));
 
@@ -107,7 +104,7 @@ int anaspec_pppc::load(pppc::pppc_product prod) {
     mold = mnew;// xold = xnew;
   }
 
-    for (unsigned i_branch = 0; i_branch < PPPC_BRANCH_NUM; i_branch++) {
+    for (unsigned i_branch = 0; i_branch < pppc::pppc_branch_size; i_branch++) {
       table[prod][i_branch].tabling(tab[i_branch]);
       cumutable[prod][i_branch].tabling(cumtab[i_branch]);
     }

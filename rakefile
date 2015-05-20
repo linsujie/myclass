@@ -1,11 +1,13 @@
 require 'rake/loaders/makefile'
 
-DLIST = FileList['mcparas']
-DEBUG = '-DDEBUG_TO_FILE'
-PREFIX = "#{Dir.home}"
-STATIC = true
+DLIST = FileList['mcparas'] # the class that you want to debug
+DEBUG = '-DDEBUG_TO_FILE' # the debug option: '', '-DDEBUG' or '-DDEBUG_TO_FILE'
+EXCLUDE = FileList[''] # the class to exclude in when compiling
+PREFIX = "#{Dir.home}"  # The path you want to install
+STATIC = true # generate a static library or a dinamic library
+VERBOSE = :brief # :detail or :brief
 
-CC = 'g++'
+CC = 'ccache g++'
 CFLAG = '-std=c++0x -Wall -g -O2'
 
 import("main.rake")

@@ -3,9 +3,7 @@
 #include<string>
 #include<vector>
 #include"Interp2D.h"
-
-#define ANASPEC_PROD_NUM 5
-#define ANASPEC_BRANCH_NUM 11
+#include"enum_utils.h"
 
 /*********************************************************************
 This class is used to calculate generation spectrum from the
@@ -16,11 +14,18 @@ The cumulated mode will return the value of \int_0^{E_0} dN/dE dE
 *********************************************************************/
 class anaspec {
 public:
-  enum product_choice {positron, antiproton, gamma, nu, deuterons, product_num};
-  enum branch_choice {electron, mu, tau, W, up, charm, bottom, top, four_e, four_mu, four_tau, branch_num};
+#define X(a) a,
+  enum product_choice {
+#include "enumdef/product_choice.def"
+  };
+  enum branch_choice {
+#include "enumdef/branch_choice.def"
+  };
+#undef X
 
-  static const std::vector <std::vector <std::string> > enum_names;
-  //enum branch_choice {electron, mu, tau, W, up, bottom, top};
+#define X(TYPE) static ENUMNAME(TYPE)
+  X(product_choice); X(branch_choice);
+#undef X
 
   anaspec();
   anaspec(anaspec::product_choice product_);
@@ -31,24 +36,29 @@ public:
   int rebranch(double *branch_);
   int rebranch(const std::vector <double> &branch_);
   int choose(anaspec::product_choice product_);
-  virtual double ask(double E, double mdm);
-  virtual double ask(double E, double mdm, bool cumulate);
+  virtual double ask(double E, double mdm, bool cumulate = false);
 
 protected:
   anaspec::product_choice product;
-  double branch[ANASPEC_BRANCH_NUM];
+  double branch[branch_choice_size];
 
 private:
-  static const std::string prodname[ANASPEC_PROD_NUM], braname[ANASPEC_BRANCH_NUM];
-  static const bool exist[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM],
-               withcum[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM],
-               newformat[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM];
-  Interp2D table[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM],
-           cumutable[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM];
-  bool loaded[ANASPEC_PROD_NUM][ANASPEC_BRANCH_NUM];
+  static const std::string prodname[product_choice_size], braname[branch_choice_size];
+  static const bool exist[product_choice_size][branch_choice_size],
+               withcum[product_choice_size][branch_choice_size],
+               newformat[product_choice_size][branch_choice_size];
+
+  Interp2D table[product_choice_size][branch_choice_size],
+           cumutable[product_choice_size][branch_choice_size];
+
+  bool loaded[product_choice_size][branch_choice_size];
 
   int load(anaspec::product_choice prod, anaspec::branch_choice bra);
   int load(anaspec::product_choice prod, anaspec::branch_choice bra, bool cumutable);
 };
+
+#define X(TYPE) ENUMDECLEAR(anaspec::TYPE)
+X(product_choice) X(branch_choice)
+#undef X
 
 #endif // for #ifndef _ANASPEC_H

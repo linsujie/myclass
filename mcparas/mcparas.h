@@ -13,16 +13,33 @@ private:
 
 public:
 
-  enum errtype { branch_out_of_range, set_branch_for_pulsar, mix_branch_out_of_range };
+#define X(a) a,
+  enum errtype {
+#include"enumdef/errtype.def"
+  };
 
-  const static std::vector < std::vector <std::string> > enum_names;
   const static std::vector <std::string> elec_runNumber, prot_runNumber, BC_runNumber;
 
-  enum pppc_or_us { pppc, us };
-  enum dm_mode { pulsar, annihilate, decay };
-  enum prop_mode { PD, DC, DR, DC2, DR2, DRC};
-  enum inject_mode { nbk, onebk, twobk };
-  enum mix_branch { emutau, mutaub, emutaub, b3l };
+  enum pppc_or_us {
+#include"enumdef/pppc_or_us.def"
+  };
+  enum dm_mode {
+#include"enumdef/dm_mode.def"
+  };
+  enum prop_mode {
+#include"enumdef/prop_mode.def"
+  };
+  enum inject_mode {
+#include"enumdef/inject_mode.def"
+  };
+  enum mix_branch {
+#include"enumdef/mix_branch.def"
+  };
+#undef X
+
+#define X(TYPE) static ENUMNAME(TYPE)
+  X(errtype); X(pppc_or_us); X(dm_mode); X(prop_mode); X(inject_mode); X(mix_branch);
+#undef X
 
   mcparas(Galprop *galprop);
   int setgalprop(Galprop *galprop) throw();
@@ -54,4 +71,8 @@ public:
   Galdef* getpoint() const throw();
   unsigned np() const throw();
 };
+#define X(TYPE) ENUMDECLEAR(mcparas::TYPE)
+  X(errtype) X(pppc_or_us) X(dm_mode) X(prop_mode) X(inject_mode) X(mix_branch)
+#undef X
+
 #endif // for #ifndef _MCPARAS_H

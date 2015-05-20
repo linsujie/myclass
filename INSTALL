@@ -1,0 +1,5 @@
+rake are adopted to install myclass, use
+
+$>rake -T
+
+to see the command supported, edit the options in rakefile to change install options
