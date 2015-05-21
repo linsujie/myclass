@@ -200,12 +200,12 @@ spectrum chi2prop::flux_for_print(load_dat::fluxes flux, int iso, int i_phi) {
   return spectmp;
 }
 
-int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi) {
+int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi, const string &fname) {
   vector <load_dat::fluxes> sub = {flux}, deno;
-  return print_flux(chc, fluxname, sub, deno, iso, i_phi);
+  return print_flux(chc, fluxname, sub, deno, iso, i_phi, fname);
 }
 
-int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &deno, int iso, int i_phi) {
+int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &deno, int iso, int i_phi, const string &fname) {
   cout << "#Extra " << load_dat::data_name[chc] << "-extra-" << fluxname;
   if(i_phi >= 0) cout << "_with_phi_" << phi[i_phi];
   cout << endl;
@@ -219,7 +219,7 @@ int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vec
     spec /= denospec;
   }
 
-  spec.print();
+  "null" == fname ? spec.print() : spec.print(fname);
   return 0;
 }
 

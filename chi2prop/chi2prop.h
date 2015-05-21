@@ -59,9 +59,9 @@ public:
 
   double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outfilename = "null", ios_base::openmode outmode = ios_base::out);
 
-  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso = -1, int i_phi = -1);
+  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso = -1, int i_phi = -1, const string &fname = "null");
 
-  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso = -1, int i_phi = -1);
+  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso = -1, int i_phi = -1, const string &fname = "null");
 
   int start(int iter);
   int run();
