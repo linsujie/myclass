@@ -34,15 +34,30 @@ int chi2prop::setkeep(vector <load_dat::fluxes> &keep_) {
   return 0;
 }
 
-inline spectrum chi2prop::get_spec(load_dat::fluxes element, unsigned i_iso) const {
+unsigned chi2prop::ele_size(load_dat::fluxes element) const {
+  return Fluxes[element].size();
+}
+
+spectrum chi2prop::get_spec(load_dat::fluxes element, int i_iso, int i_phi) const {
   printDebugMsg("Check cposi", "rescale with cposi: %g", cposi);
-  if((element == load_dat::secelecs || element == load_dat::secposis) && i_iso == 0) return cposi * Fluxes[element][0];
-  if((element == load_dat::secantip) && i_iso == 0) return cpbar * Fluxes[element][0];
-  else return Fluxes[element][i_iso];
+  if (i_phi >= int(phi.size())) throw(no_exist_phi);
+  else if (i_iso >= int(ele_size(element))) throw(no_exist_iso);
+
+  if (i_iso < 0) {
+    spectrum spectmp = get_spec(element, 0, i_phi);
+    for(unsigned i = 1; i < ele_size(element); i++)
+      spectmp += get_spec(element, i, i_phi);
+    return spectmp;
+  }
+
+  if (i_phi >= 0) return Fluxes_as[element][i_iso][i_phi];
+  if ((element == load_dat::secelecs || element == load_dat::secposis) && i_iso == 0) return cposi * Fluxes[element][0];
+  if ((element == load_dat::secantip) && i_iso == 0) return cpbar * Fluxes[element][0];
+  return Fluxes[element][i_iso];
 }
 
 int chi2prop::get_by_iso(double *Etmp, double *Ftmp, int ndat, load_dat::fluxes element) {
-  printDebugMsg("Routine", ">>get_flux: %d, %d", load_dat::iso_vectors[element][0], load_dat::iso_vectors[element][1]);
+  printDebugMsg("Routine", ">>get_by_iso: %d, %d", load_dat::iso_vectors[element][0], load_dat::iso_vectors[element][1]);
   vector <int> isovec = load_dat::iso_vectors[element];
 
   for(unsigned j = 0; j < isovec.size() - 1; j++) {
@@ -50,26 +65,25 @@ int chi2prop::get_by_iso(double *Etmp, double *Ftmp, int ndat, load_dat::fluxes 
     Fluxes[element][j] = spectrum(Etmp, Ftmp, ndat);
   }
 
-  printDebugMsg("Routine", "<<get_flux");
+  printDebugMsg("Routine", "<<get_by_iso");
   return 1;
 }
 
 int chi2prop::get_by_name(double *Etmp, double *Ftmp, int ndat, load_dat:: fluxes element) {
-  printDebugMsg("Routine", ">>get_flux: %s", load_dat::iso_names[element - load_dat::common_fluxnum].c_str());
+  printDebugMsg("Routine", ">>get_by_name: %s", load_dat::iso_names[element - load_dat::common_fluxnum].c_str());
 
   galpropmc->get_result(Etmp, Ftmp, load_dat::iso_names[element - load_dat::common_fluxnum].c_str());
   Fluxes[element][0] = spectrum(Etmp, Ftmp, ndat);
 
-  printDebugMsg("Routine", "<<get_flux");
+  printDebugMsg("Routine", "<<get_by_name");
   return 1;
 }
 
 int chi2prop::get_flux(load_dat::fluxes element) {
   if(!outdate[element]) return 0;
-  else {
-    outdate[element] = false;
-    outdate_solar[element] = true;
-  }
+
+  outdate[element] = false;
+  outdate_solar[element] = true;
 
   unsigned ndat=galpropmc->gcr[galpropmc->n_species-1].n_pgrid;
   double *Etmp = new double[ndat],
@@ -123,9 +137,8 @@ int chi2prop::solar_modulas(load_dat::fluxes element) {
   if(!outdate_solar[element]) return 0;
   outdate_solar[element] = false;
 
-  for(unsigned i = 0; i < Fluxes_as[element].size(); i++){
-    solar_modulas(element, i);
-  }
+  for(unsigned i = 0; i < ele_size(element); i++) solar_modulas(element, i);
+
   return 1;
 }
 
@@ -140,27 +153,16 @@ int chi2prop::solar_modulas(load_dat::choice chc) {
   return 0;
 }
 
-spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors) const {
+spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors, int i_phi) const {
   printDebugMsg("Routine", ">>sum_elements")
   spectrum res;
 
-  for(unsigned i = 0; i < elevectors.size(); i++)
-    for(unsigned i_iso = 0; i_iso < Fluxes[elevectors[i]].size(); i_iso++)
-      if(0 == i && 0 == i_iso) res = get_spec(elevectors[i], i_iso);
-      else res += get_spec(elevectors[i], i_iso);
-
-  return res;
-  printDebugMsg("Routine", "<<sum_elements")
-}
-
-spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors, unsigned i_phi) const {
-  spectrum res;
-
   for(unsigned i = 0; i < elevectors.size(); i++) {
-    for(unsigned i_iso = 0; i_iso < Fluxes_as[elevectors[i]].size(); i_iso++)
-      if(0 == i && 0 == i_iso) res = Fluxes_as[elevectors[i]][i_iso][i_phi];
-      else res += Fluxes_as[elevectors[i]][i_iso][i_phi];
+    for(unsigned i_iso = 0; i_iso < ele_size(elevectors[i]); i_iso++)
+      if(0 == i && 0 == i_iso) res = get_spec(elevectors[i], i_iso, i_phi);
+      else res += get_spec(elevectors[i], i_iso, i_phi);
   }
+  printDebugMsg("Routine", "<<sum_elements")
   return res;
 }
 
@@ -169,35 +171,6 @@ int chi2prop::print_lines(load_dat::choice chc, double phi, const spectrum &spec
   tmpout << "#Result " << load_dat::data_name[chc] << "-phi-" << phi << endl;
   ns_spec.compare(spec, tmpout);
   return 0;
-}
-
-#define IPHI [i_phi]
-#define NOIPHI
-#define CHI2PROP_GET_FLUX_FOR_P(vec, ind) \
-      if(-1 == iso) { \
-        for(unsigned i = 0; i < vec[flux].size(); i++)\
-          if(0 == i) spectmp = vec[flux][i]ind;\
-          else spectmp += vec[flux][i]ind;\
-      } else\
-        spectmp = vec[flux][iso]ind
-
-spectrum chi2prop::flux_for_print(load_dat::fluxes flux, int iso, int i_phi) {
-  spectrum spectmp;
-
-  if(i_phi >= 0) {
-    if(int(Fluxes_as[flux].size()) <= iso || int(phi.size()) <= i_phi) {
-      cout << "Error::print_flux::You are trying to print unexist isotope" << endl;
-      exit(1);
-    }
-
-      if (-1 != iso && outdate_solar[flux]) solar_modulas(flux, unsigned(iso));
-      else solar_modulas(flux);
-      CHI2PROP_GET_FLUX_FOR_P(Fluxes_as, IPHI);
-  } else {
-    CHI2PROP_GET_FLUX_FOR_P(Fluxes, NOIPHI);
-  }
-
-  return spectmp;
 }
 
 int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi, const string &fname) {
@@ -210,16 +183,16 @@ int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vec
   if(i_phi >= 0) cout << "_with_phi_" << phi[i_phi];
   cout << endl;
 
-  spectrum spec = flux_for_print(sub[0], iso, i_phi);
-  for (unsigned i = 1; i < sub.size(); i++) spec += flux_for_print(sub[i], iso, i_phi);
+  spectrum spec = get_spec(sub[0], iso, i_phi);
+  for (unsigned i = 1; i < sub.size(); i++) spec += get_spec(sub[i], iso, i_phi);
 
   if(deno.size()) {
-    spectrum denospec = flux_for_print(deno[0], iso, i_phi);
-    for (unsigned i = 1; i < deno.size(); i++) spec += flux_for_print(deno[i], iso, i_phi);
+    spectrum denospec = get_spec(deno[0], iso, i_phi);
+    for (unsigned i = 1; i < deno.size(); i++) spec += get_spec(deno[i], iso, i_phi);
     spec /= denospec;
   }
 
-  "null" == fname ? spec.print() : spec.print(fname);
+  spec.print(fname);
   return 0;
 }
 
@@ -321,3 +294,15 @@ int chi2prop::setpara(double *p, model_kind mod) {
   return galpropmc->set_params(p, mod);
 }
 
+int chi2prop::err_info(errtype &err) throw() {
+  switch(err) {
+  case no_exist_phi:
+    cout << "Error::chi2prop::You are asking for spectrum with unexisted phi" << endl;
+    break;
+
+  case no_exist_iso:
+    cout << "Error::chi2prop::You are asking for spectrum with unexisted iso number" << endl;
+    break;
+  }
+  return 0;
+}
