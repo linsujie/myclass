@@ -29,7 +29,7 @@ int chi2prop::setphi(const vector <double> &phi_) {
   return 0;
 }
 
-int chi2prop::setkeep(vector <load_dat::fluxes> &keep_) {
+int chi2prop::setkeep(const vector <load_dat::fluxes> &keep_) {
   keep = keep_;
   return 0;
 }
@@ -39,6 +39,7 @@ unsigned chi2prop::ele_size(load_dat::fluxes element) const {
 }
 
 spectrum chi2prop::get_spec(load_dat::fluxes element, int i_iso, int i_phi) const {
+  printDebugMsg("Routine", ">> get_spec: element %d, iso %d, iphi %d", element, i_iso, i_phi);
   printDebugMsg("Check cposi", "rescale with cposi: %g", cposi);
   if (i_phi >= int(phi.size())) throw(no_exist_phi);
   else if (i_iso >= int(ele_size(element))) throw(no_exist_iso);
@@ -80,6 +81,7 @@ int chi2prop::get_by_name(double *Etmp, double *Ftmp, int ndat, load_dat:: fluxe
 }
 
 int chi2prop::get_flux(load_dat::fluxes element) {
+  printDebugMsg("Routine", ">>get_flux: by flux; element %d, to get %s", element, outdate[element] ? "true" : "false");
   if(!outdate[element]) return 0;
 
   outdate[element] = false;
@@ -91,6 +93,7 @@ int chi2prop::get_flux(load_dat::fluxes element) {
 
   if(element < load_dat::common_fluxnum) get_by_iso(Etmp, Ftmp, ndat, element);
   else get_by_name(Etmp, Ftmp, ndat, element);
+  printDebugMsg("Routine", "<<get_flux: by flux");
   return 1;
 }
 
@@ -115,6 +118,7 @@ int chi2prop::get_flux(load_dat::choice chc){
 }
 
 int chi2prop::solar_modulas(load_dat::fluxes element, unsigned iso) {
+  printDebugMsg("Routine", ">>solar_modulas : flux iso %d %d", element, iso)
   static ffd_solar_mod *ffdsolar = new ffd_solar_mod();
   static sym_solar_mod *symsolar = new sym_solar_mod();
   static solar_mod *solar;
@@ -130,15 +134,19 @@ int chi2prop::solar_modulas(load_dat::fluxes element, unsigned iso) {
     Fluxes_as[element][iso][i_phi] = get_spec(element, iso);
     solar->mod(get_spec(element, iso), Fluxes_as[element][iso][i_phi]);
   }// i_phi
+
+  printDebugMsg("Routine", "<<solar_modulas : flux iso");
   return 0;
 }
 
 int chi2prop::solar_modulas(load_dat::fluxes element) {
+  printDebugMsg("Routine", ">>solar_modulas : flux %d", element)
   if(!outdate_solar[element]) return 0;
   outdate_solar[element] = false;
 
   for(unsigned i = 0; i < ele_size(element); i++) solar_modulas(element, i);
 
+  printDebugMsg("Routine", "<<solar_modulas : flux")
   return 1;
 }
 
@@ -182,6 +190,9 @@ int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vec
   cout << "#Extra " << load_dat::data_name[chc] << "-extra-" << fluxname;
   if(i_phi >= 0) cout << "_with_phi_" << phi[i_phi];
   cout << endl;
+
+  for (unsigned i = 0; i < sub.size(); i++) get_flux(sub[i]);
+  for (unsigned i = 0; i < deno.size(); i++) get_flux(deno[i]);
 
   spectrum spec = get_spec(sub[0], iso, i_phi);
   for (unsigned i = 1; i < sub.size(); i++) spec += get_spec(sub[i], iso, i_phi);

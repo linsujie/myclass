@@ -54,7 +54,7 @@ public:
   double cposi, cpbar;
   chi2prop();
   int setphi(const vector <double> &phi_);
-  int setkeep(vector <load_dat::fluxes> &keep_);
+  int setkeep(const vector <load_dat::fluxes> &keep_);
   int setpara(double *p, model_kind mod);
 
   double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outfilename = "null", ios_base::openmode outmode = ios_base::out);

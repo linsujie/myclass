@@ -1,7 +1,7 @@
 require 'rake/loaders/makefile'
 
-DLIST = FileList['mcparas'] # the class that you want to debug
-DEBUG = '-DDEBUG_TO_FILE' # the debug option: '', '-DDEBUG' or '-DDEBUG_TO_FILE'
+DLIST = FileList[] # the class that you want to debug
+DEBUG = '-D_DEBUG -DDEBUG_TO_FILE' # the debug option: '', '-D_DEBUG' or '-DDEBUG_TO_FILE'
 EXCLUDE = FileList[''] # the class to exclude in when compiling
 PREFIX = "#{Dir.home}"  # The path you want to install
 STATIC = true # generate a static library or a dinamic library
