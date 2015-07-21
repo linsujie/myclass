@@ -4,6 +4,7 @@
 #include<cmath>
 #include<cstdlib>
 #include<iomanip>
+#include"vec_utils.h"
 #include"spectrum.h"
 #include"interp.h"
 #include"oformat.h"
@@ -56,7 +57,7 @@ spectrum::spectrum(const string &filename): Es(0), Ee(0), factor(0) {
 
   datfile.close();
 
-  ini_check();
+  if(!ini_check()) cout << "reading emptyfile " << filename << endl;
 }
 
 inline int spectrum::clear_lab() {
@@ -106,16 +107,17 @@ int spectrum::ini(double Es_, double Ee_, double factor_) {
   return 0;
 }
 
-int spectrum::ini_check() const {
-  if (E.size() == 0 || F.size() == 0)
-    cout << "WARNING::spectrum::spectrum:you are inputing empty vectors to a spectrum" << endl;
-
+int spectrum::ini_check() const throw(errtype) {
   if (E.size() != F.size()) {
     cout << "ERROR::spectrum::spectrum:spectrum initializing with wrong vectors" << endl;
-    exit(1);
+    throw(ini_wrong);
   }
 
-  return 0;
+  if (E.size() == 0 || F.size() == 0) {
+    cout << "WARNING::spectrum::spectrum:you are inputing empty vectors to a spectrum" << endl;
+    return 0;
+  }
+  return 1;
 }
 
 int spectrum::comp(const spectrum &another, ostringstream &os) const {
@@ -282,7 +284,8 @@ spectrum& spectrum::operator=(const spectrum& rhs) {
   }\
   spectrum& spectrum::operator operse(const spectrum &rhs){\
     if(E!=rhs.E){\
-      cout<<"ERROR::spectrum::"<<#opers<<" or "<<#operse<<":the spectrum in the left hand side and right hand side is different"<<endl;\
+      cout<<"ERROR::spectrum::"<<#opers<<" or "<<#operse<<":the spectrum in the left hand side and right hand side is different"<<endl\
+      << "left: " << E << endl << "right: " << rhs.E << endl;\
       exit(1);\
     }\
     for(unsigned i=0;i<E.size();i++){\

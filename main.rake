@@ -63,7 +63,7 @@ def gendeps
 end
 
 def readdepend
-  gendeps unless File.exist?(DEPNAME)
+  gendeps unless File.exist?(DEPNAME) && File.size(DEPNAME) != 0
   JSON.parse(File.new(DEPNAME).read)
 end
 

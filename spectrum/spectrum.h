@@ -8,11 +8,8 @@ recording, dealing with and printing a spectrum easily
 #include"gfunction.h"
 
 class spectrum {
-private:
-  int ini_check() const;
-  inline int clear_lab();
-  inline int clear_spec();
 public:
+  enum errtype { ini_wrong };
   std::vector <double> E, F;
   double Es, Ee, factor;
   spectrum();
@@ -57,6 +54,12 @@ public:
   SPECTURM_OPERATOR(-, -=)
   SPECTURM_OPERATOR(*, *=)
   SPECTURM_OPERATOR( /, /=)
+
+
+private:
+  int ini_check() const throw(errtype);
+  inline int clear_lab();
+  inline int clear_spec();
 };
 
 spectrum operator *(const double &lhs, const spectrum &rhs);
