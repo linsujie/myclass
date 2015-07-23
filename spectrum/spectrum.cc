@@ -299,12 +299,12 @@ spectrum& spectrum::operator=(const spectrum& rhs) {
     }\
     return *this;\
   }\
-  spectrum spectrum::operator opers(const spectrum &rhs){\
+  spectrum spectrum::operator opers(const spectrum &rhs) const{\
     spectrum result(*this);\
     result operse rhs;\
     return result;\
   }\
-  spectrum spectrum::operator opers(const double &rhs){\
+  spectrum spectrum::operator opers(const double &rhs) const{\
     spectrum result(*this);\
     result operse rhs;\
     return result;\

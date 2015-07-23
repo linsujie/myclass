@@ -47,14 +47,13 @@ public:
 #define SPECTURM_OPERATOR(opers,operse)\
   spectrum& operator operse(const double &rhs);\
   spectrum& operator operse(const spectrum &rhs);\
-  spectrum operator opers(const double &rhs);\
-  spectrum operator opers(const spectrum &rhs);\
+  spectrum operator opers(const double &rhs) const;\
+  spectrum operator opers(const spectrum &rhs) const;\
   friend spectrum operator opers(const double &lhs,const spectrum &rhs);
   SPECTURM_OPERATOR(+, +=)
   SPECTURM_OPERATOR(-, -=)
   SPECTURM_OPERATOR(*, *=)
   SPECTURM_OPERATOR( /, /=)
-
 
 private:
   int ini_check() const throw(errtype);

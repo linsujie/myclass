@@ -29,7 +29,7 @@ enum eleexpname {elePAMELA, eleAMS02, eleAMS02enlarge, eleAMS025GV, eleAMS0210GV
 enum totexpname {totFH, totAMS02, totAMS025GV, totAMS0210GV, totAMS2014, totAMS20141GV};
 enum posifexpname {posiAMS02, posiAMS021GV, posiAMS025GV, posiAMS0210GV, posiAMS2014, posiAMS20141GV};
 enum positexpname {positAMS02, positAMS02enlarge, positAMS025GV, positAMS0210GV, positAMS2014, positAMS20141GV};
-enum protexpname {protAMS02, protAMS021GV, protPAMELA, protATIC, protCREAM};
+enum protexpname {protAMS02rigidity, protAMS021GV, protPAMELA, protATIC, protCREAM, protAMS2015rigidity, protAMS2015};
 enum bcexpname {BCACE97, BCACE98, BCACE01, BCACE09, BCAMS0198, BCATIC0203, BCBALLOON91, BCCREAM04, BCHEAO0379, BCTRACER06, BCUlysses90, BCVoyager86, BCAMS02pre, BCHEAO0379enlarge};
 enum beexpname {BeACE97, BeACESIS97, BeBalloon73, BeBalloon7705, BeBalloon7709, BeIMP72, BeIMP74, BeISEE378, BeISOMAX98, BeUlysses90, BeVoyager7791, BeVoyager7798};
 
