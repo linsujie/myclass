@@ -16,7 +16,7 @@ public:
   spectrum(double *E_, double *F_, unsigned num);
   spectrum(const std::vector <double> &E_, const std::vector <double> &F_);
   spectrum(double Es_, double Ee_, double factor_);
-  spectrum(const std::string &filename);
+  spectrum(const std::string &filename, double Eindx = 0);
 
   int ini();
   int ini(double *E_, double *F_, unsigned num);

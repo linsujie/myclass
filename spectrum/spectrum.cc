@@ -35,10 +35,10 @@ spectrum::spectrum(double Es_, double Ee_, double factor_):
     F.push_back(0);
   }
 }
-spectrum::spectrum(const string &filename): Es(0), Ee(0), factor(0) {
+spectrum::spectrum(const string &filename, double Eindx): Es(0), Ee(0), factor(0) {
   const char annota[2] = "#";
   string line;
-  double tmp;
+  double tmpE, tmpF;
 
   ifstream datfile(filename);
   if (datfile.fail() || datfile.bad()) {
@@ -51,8 +51,8 @@ spectrum::spectrum(const string &filename): Es(0), Ee(0), factor(0) {
 
     istringstream is(line);
 
-    is >> tmp, E.push_back(tmp);
-    is >> tmp, F.push_back(tmp);
+    is >> tmpE, E.push_back(tmpE);
+    is >> tmpF, F.push_back(tmpF / pow(tmpE, Eindx));
   }
 
   datfile.close();
