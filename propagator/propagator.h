@@ -30,20 +30,34 @@ private:
   double K0, E0, delta, L, zob;
   int nmax;
   Interp2D intp;
-  int theta(double x);
-  double phi_exp(int n, double z, double lambdaD2, int prime, int flag);
 
-  double G1d(double z, double lambdaD2, int flag);
-  double G1d(double z, double lambdaD2);
+  friend class boost::serialization::access;
+    template <class Archive>
+      void serialize(Archive &ar, const unsigned int version = 0) {
+        ar & K0;
+        ar & E0;
+        ar & delta;
+        ar & L;
+        ar & zob;
+        ar & intp;
+      }
+
+  int theta(double x) const;
+  double phi_exp(int n, double z, double lambdaD2, int prime, int flag) const;
+
+  double G1d(double z, double lambdaD2, int flag) const;
+  double G1d(double z, double lambdaD2) const;
 public:
 
-  Green(double K0_in, double E0_in, double delta_in, double L_in, double zob_in, int nmax_in);
+  Green();
+  Green(double K0_, double E0_, double delta_, double L_, double zob_, int nmax_);
+  int create_tab(double precision = 1);
+  double G1dq(double z, double lambdaD2) const;
 
-  int create_tab();
-  double G1dq(double z, double lambdaD2);
+  double G(double r, double z, double t, double E) const;
+  double Gq(double r, double z, double t, double E) const;
 
-  double G(double r, double z, double t, double E);
-  double Gq(double r, double z, double t, double E);
+  int print() const;
 };
 }
 #endif // for #ifndef _PROPAGATOR_H

@@ -9,6 +9,9 @@
 using std::abs;
 using std::cout;
 using std::endl;
+using std::fstream;
+using std::ios;
+using std::string;
 using std::vector;
 
 Table2D::Table2D(const vector <double> &x_, const vector <double> &y_, const vector <vector <double> > &tab_) {
@@ -257,3 +260,19 @@ double Table2D::dy2(LineConsIter yiter) const {
 
   return dy2_max;
 }
+
+//int Table2D::save(const string &filename) const {
+//  fstream fout(filename.c_str(), ios::binary | ios::out);
+//  fout.write((char *) this, sizeof(*this));
+//  fout.close();
+//
+//  return 0;
+//}
+//
+//int Table2D::read(const string &filename) const {
+//  fstream fin(filename.c_str(), ios::binary | ios::in);
+//  fin.read((char *) this, sizeof(Table2D));
+//  fin.close();
+//
+//  return 0;
+//}

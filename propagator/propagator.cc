@@ -1,5 +1,3 @@
-#ifndef _PROPAGATOR_CC
-#define _PROPAGATOR_CC
 #include<iostream>
 #include<cmath>
 #include"propagator.h"
@@ -59,12 +57,12 @@ public:
   }
 };
 
-int Green::theta(double x) {
+int Green::theta(double x) const {
   if (x > 0) return 1;
 
   else return 0;
 }
-double Green::phi_exp(int n, double z, double lambdaD2, int prime, int flag) {
+double Green::phi_exp(int n, double z, double lambdaD2, int prime, int flag) const {
   double kn;
 
   if (prime == 0) {
@@ -99,7 +97,7 @@ double Green::phi_exp(int n, double z, double lambdaD2, int prime, int flag) {
   So we replace the first equation with the second one in when lambdaD2
   is large.
  *********************************************************************/
-double Green::G1d(double z, double lambdaD2, int flag) {
+double Green::G1d(double z, double lambdaD2, int flag) const {
   double sum, zn;
   sum = 0;
 
@@ -119,7 +117,7 @@ double Green::G1d(double z, double lambdaD2, int flag) {
   return sum;
 }
 
-double Green::G1d(double z, double lambdaD2) {
+double Green::G1d(double z, double lambdaD2) const{
   double sum, zn, zita;
   zita = L * L / lambdaD2;
   sum = 0;
@@ -140,44 +138,59 @@ double Green::G1d(double z, double lambdaD2) {
   return sum;
 }
 
-Green::Green(double K0_in, double E0_in, double delta_in, double L_in, double zob_in, int nmax_in) {
-  K0 = K0_in;
-  E0 = E0_in;
-  delta = delta_in;
-  L = L_in;
-  zob = zob_in;
-  nmax = nmax_in;
-}
+Green::Green() {}
+Green::Green(double K0_, double E0_, double delta_, double L_, double zob_, int nmax_): K0(K0_),
+  E0(E0_), delta(delta_), L(L_), zob(zob_), nmax(nmax_) {}
 
-int Green::create_tab() {
+int Green::create_tab(double precision) {
   cout << "<<creating table for Green function" << endl;
   G1dfunc g1df(zob, L, nmax);
   double range[4] = {1e-200, 0.1 * K0, 0.97 * L, 4 * pow(5e5, delta) * 2e4 * K0};
   cout << "range is " << range[0] << " " << range[1] << " " << range[2] << " " << range[3] << endl;
-  intp.lncreating(&g1df, range, 1);
+  intp.lncreating(&g1df, range, precision);
   cout << "table created" << endl;
   return 0;
 }
-double Green::G1dq(double z, double lambdaD2) {
+double Green::G1dq(double z, double lambdaD2) const {
   return intp.lnask(abs(z), lambdaD2);
 }
 
 #define m_p 0.938
-double Green::G(double r, double z, double t, double E) {
+double Green::G(double r, double z, double t, double E) const {
   double K, lambdaD2;
   K = E < 25.0 ?
       K0 * pow(E / E0, delta) * E / sqrt(E * E + m_p * m_p) :
       K0 * pow(E / E0, delta);
-  //To save the calculation of beta when E is large
+  //beta would be almost 1 when E is large
   lambdaD2 = 4 * K * t;
+
   return theta(t) / (PI * lambdaD2) * exp(-r * r / lambdaD2) * G1d(z, lambdaD2);
 }
 
 #define ZMIN 1e-300
-double Green::Gq(double r, double z, double t, double E) {
+double Green::Gq(double r, double z, double t, double E) const {
   double K, lambdaD2;
   K = K0 * pow(E / E0, delta);
   lambdaD2 = 4 * K * t;
   return theta(t) / (PI * lambdaD2) * exp(-r * r / lambdaD2) * intp.lnask(abs(z) + ZMIN, lambdaD2);
 }
-#endif // for #ifndef _PROPAGATOR_CC
+
+int Green::print() const {
+  Table2D::TabConsIter fiter = intp.lntab.value.begin(),
+    siter = intp.lntab.value.end();
+  siter--;
+
+  cout << "K0: " << K0 << endl
+    << "E0: " << E0 << endl
+    << "delta: " << delta << endl
+    << "L: " << L << endl
+    << "zob: " << zob << endl
+    << "intp with: " << endl
+    << "  lntab.xaxis: " << intp.lntab.xaxis.begin()->first << "... (size " << intp.lntab.xaxis.size() << ")" << endl
+    << "  lntab.yaxis: " << intp.lntab.yaxis.begin()->first << "... (size " << intp.lntab.yaxis.size() << ")" << endl
+    << "  lntab.value: " << fiter->second.begin()->second << "...  " << endl
+    << "               ..." << endl
+    << "               " << siter->second.begin()->second << "... " << endl;
+
+  return 0;
+}

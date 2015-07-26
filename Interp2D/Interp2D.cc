@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cstring>
 #include<cstdlib>
 #include<cmath>
 #include<set>
@@ -7,6 +8,7 @@
 using std::cout;
 using std::endl;
 using std::vector;
+using std::string;
 using std::log;
 
 #define logwb(expr) log(fmax(expr, 1e-300))

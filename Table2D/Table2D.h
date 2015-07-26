@@ -5,9 +5,14 @@
 each corresponding point (x, y). The value in each point is determined
 by a function you defined before.
  *********************************************************************/
-#include<map>
+#include<boost/serialization/map.hpp>
 #include<vector>
+#include<cstring>
+#include<fstream>
+#include<boost/archive/binary_oarchive.hpp>
+#include<boost/archive/binary_iarchive.hpp>
 #include"gfunction.h"
+
 class Table2D {
 public:
   typedef std::pair <double, double> Pair;
@@ -25,6 +30,9 @@ public:
   Table2D(const std::vector <double> &x_, const std::vector <double> &y_, const std::vector <std::vector <double> > &tab_);
   Table2D(gfunction *func_);
 
+  //int save(const std::string &filename) const;
+  //int read(const std::string &filename) const;
+
   int setfunc(gfunction *func_);
   int insline(double x_);
   int inscolm(double y_);
@@ -33,6 +41,14 @@ public:
   int list() const;
   int clear();
 private:
+  friend class boost::serialization::access;
+  template <class Archive>
+    void serialize(Archive &ar, const unsigned int version = 0) {
+      ar & xaxis;
+      ar & yaxis;
+      ar & value;
+    }
+
   LineConsIter getlineiter(double axival, const Line &line) const;
   TabConsIter gettabiter(double xval) const;
   void notfoundwarn() const;

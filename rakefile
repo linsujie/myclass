@@ -5,7 +5,7 @@ DEBUG = '-D_DEBUG -DDEBUG_TO_FILE' # the debug option: '', '-D_DEBUG' or '-DDEBU
 EXCLUDE = FileList[''] # the class to exclude in when compiling
 PREFIX = "#{Dir.home}"  # The path you want to install
 STATIC = true # generate a static library or a dinamic library
-VERBOSE = :brief # :detail or :brief
+VERBOSE = :detail # :detail or :brief
 
 CC = 'ccache g++'
 CFLAG = '-std=c++0x -Wall -g -O2'
