@@ -38,5 +38,6 @@ private:
   double pppc_ask(double E, double mdm, pppc::pppc_product prod, bool cumulate);
   int load(anaspec::product_choice prod);
   int load(pppc::pppc_product prod);
+  int add_threshold_mass(Table2D *tab) const;
 };
 #endif // for #ifndef _ANASPEC_PPPC_H

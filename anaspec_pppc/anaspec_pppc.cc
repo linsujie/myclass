@@ -104,14 +104,16 @@ int anaspec_pppc::load(pppc::pppc_product prod) {
     mold = mnew;// xold = xnew;
   }
 
-    for (unsigned i_branch = 0; i_branch < pppc::pppc_branch_size; i_branch++) {
-      table[prod][i_branch].tabling(tab[i_branch]);
-      cumutable[prod][i_branch].tabling(cumtab[i_branch]);
-    }
+  add_threshold_mass(tab);
 
-   low_x = (tab[0].xaxis.begin())->first / 2;
+  for (unsigned i_branch = 0; i_branch < pppc::pppc_branch_size; i_branch++) {
+    table[prod][i_branch].tabling(tab[i_branch]);
+    cumutable[prod][i_branch].tabling(cumtab[i_branch]);
+  }
 
-   return 0;
+  low_x = (tab[0].xaxis.begin())->first / 2;
+
+  return 0;
 }
 
 int anaspec_pppc::load(anaspec::product_choice prod) {
@@ -120,4 +122,22 @@ int anaspec_pppc::load(anaspec::product_choice prod) {
   for (unsigned i = 0; i < product_map[prod].size(); i++)
     load(product_map[prod][i]);
   return 1;
+}
+
+int anaspec_pppc::add_threshold_mass(Table2D *tab) const {
+  const vector <double> threshold_mass = { 0, 0, 0, 0, 0, 0, 0, 0, 0, //e, mu, tau
+    0, 0, 0, //quark, charm, bottom; We set those mass smaller than 5GeV to be zero, and do nothing to these branch
+    173.07, 80.4, 80.4, 80.4, 91.2, 91.2, 91.2, //t, W, Z
+    0, 0, 126, 0, 0, 0, 0, 0, 0 };//gluon, gamma, higgs, nu, four_leptons
+
+  for(unsigned i_branch = 0; i_branch < pppc::pppc_branch_size; i_branch++) {
+    if (threshold_mass[i_branch] == 0) continue;
+
+    double nextmass = tab[i_branch].yaxis.upper_bound(threshold_mass[i_branch])->first;
+    for(Table2D::LineIter i = tab[i_branch].xaxis.begin(); i != tab[i_branch].xaxis.end(); i++) {
+      tab[i_branch].insval(i->first, threshold_mass[i_branch], tab[i_branch].value[i->first][nextmass]);
+    }
+  }
+
+  return 0;
 }
