@@ -41,8 +41,7 @@ private:
   int solar_modulas(load_dat::fluxes element);
   int solar_modulas(load_dat::fluxes element, unsigned iso);
   spectrum sum_elements(const vector <load_dat::fluxes> &elevectors, int iphi = -1) const;
-  int print_lines(load_dat::choice chc, double phi, const spectrum &spec, const spectrum &specns, ostringstream &tmpout) const;
-  double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, bool main_title, ostringstream &tmpout) const;
+  double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, double phi, const string &outpath) const;
 
   int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
 
@@ -57,11 +56,11 @@ public:
   int setkeep(const vector <load_dat::fluxes> &keep_);
   int setpara(double *p, model_kind mod);
 
-  double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outfilename = "null", ios_base::openmode outmode = ios_base::out);
+  double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outpath = "null", ios_base::openmode outmode = ios_base::out);
 
-  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso = -1, int i_phi = -1, const string &fname = "null");
+  int print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso = -1, int i_phi = -1, const string &outpath = "null");
 
-  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso = -1, int i_phi = -1, const string &fname = "null");
+  int print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &denom, int iso = -1, int i_phi = -1, const string &outpath = "null");
 
   static int err_info(errtype &err) throw();
 

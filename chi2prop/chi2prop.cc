@@ -1,6 +1,7 @@
 #include<cmath>
 #include<iostream>
 #include<fstream>
+#include<sys/stat.h>
 #include"mydebug.h"
 #include"chi2prop.h"
 #include"vec_utils.h"
@@ -174,22 +175,18 @@ spectrum chi2prop::sum_elements(const vector <load_dat::fluxes> &elevectors, int
   return res;
 }
 
-//output the lines of calculation
-int chi2prop::print_lines(load_dat::choice chc, double phi, const spectrum &spec, const spectrum &ns_spec, ostringstream &tmpout) const {
-  tmpout << "#Result " << load_dat::data_name[chc] << "-phi-" << phi << endl;
-  ns_spec.compare(spec, tmpout);
-  return 0;
-}
-
-int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi, const string &fname) {
+int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, load_dat::fluxes flux, int iso, int i_phi, const string &outpath) {
   vector <load_dat::fluxes> sub = {flux}, deno;
-  return print_flux(chc, fluxname, sub, deno, iso, i_phi, fname);
+  return print_flux(chc, fluxname, sub, deno, iso, i_phi, outpath);
 }
 
-int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &deno, int iso, int i_phi, const string &fname) {
+int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vector <load_dat::fluxes> &sub, const vector <load_dat::fluxes> &deno, int iso, int i_phi, const string &outpath) {
   cout << "#Extra " << load_dat::data_name[chc] << "-extra-" << fluxname;
   if(i_phi >= 0) cout << "_with_phi_" << phi[i_phi];
   cout << endl;
+
+  ostringstream fname;
+  fname << outpath << "/" << load_dat::data_name[chc] << "/" << fluxname << "-" << phi[i_phi];
 
   for (unsigned i = 0; i < sub.size(); i++) get_flux(sub[i]);
   for (unsigned i = 0; i < deno.size(); i++) get_flux(deno[i]);
@@ -203,31 +200,38 @@ int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vec
     spec /= denospec;
   }
 
-  spec.print(fname);
+  spec.print(outpath == "null" ? "null" : fname.str());
   return 0;
 }
 
 //compare the result with specified data
-double chi2prop::calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, bool main_title, ostringstream &tmpout) const {
+double chi2prop::calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, double phi, const string &outpath) const {
   printDebugMsg("Routine", ">>calc_chi2: expgroupsize = %zu", exp_subgrp.size());
-  double subsum = 0,
-         tmpchi2;
+  double subsum = 0;
 
-  for(unsigned j = 0; j < exp_subgrp.size(); j++){
-    bool main_head = (main_title && j == 0);
-    tmpchi2 = load_dat::datas[chc].chi2(exp_subgrp[j], spec, pflag, main_head, tmpout);
+  for(unsigned j = 0; j < exp_subgrp.size(); j++) {
+    ostringstream outfile;
+    outfile << outpath << "/data-" << phi << "-" << enum2str(chc, exp_subgrp[j]);
 
-    if(pflag) tmpout <<"#chi2 is: "<<tmpchi2<<endl;
-    subsum += tmpchi2;
+    subsum += load_dat::datas[chc].chi2(exp_subgrp[j], spec, pflag, outpath == "null" ? "null" : outfile.str());
   }
   printDebugMsg("Routine", "<<calc_chi2: %f", subsum);
   return subsum;
 }
 
-double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, bool pflag_, const string &outfilename, ios_base::openmode outmode){
+double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, bool pflag_, const string &outpath, ios_base::openmode outmode){
   printDebugMsg("Routine", ">>chi2: %s", load_dat::data_name[chc].c_str());
   pflag = pflag_;
-  ostringstream tmpout;
+
+  string subpath = outpath + "/" + load_dat::data_name[chc];
+  if (pflag) {
+    if (outpath == "null") subpath = "null";
+    else {
+      mkdir(outpath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+      mkdir(subpath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+  }
+  //ostringstream tmpout;
 
   get_flux(chc);
   solar_modulas(chc);
@@ -235,27 +239,22 @@ double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, b
   spectrum spec, specns;
 
   if(pflag) {
-    //cout << "subtable " << load_dat::sub_table[chc] << endl;
     specns = sum_elements(load_dat::sub_table[chc]);
     if(unsigned(chc) < load_dat::deno_table.size()) specns /= sum_elements(load_dat::deno_table[chc]);
   }
 
   double sum=0;
-  if(pflag) tmpout << "#Data " << load_dat::data_name[chc] << endl;
   for(unsigned i_exp = 0; i_exp < phi.size(); i_exp++) {
 
     spec = sum_elements(load_dat::sub_table[chc], i_exp);
     if(unsigned(chc) < load_dat::deno_table.size()) spec /= sum_elements(load_dat::deno_table[chc], i_exp);
 
-    if(pflag) print_lines(chc, phi[i_exp], spec, specns, tmpout);
-    sum += calc_chi2(chc, spec, exn[i_exp], i_exp == 0, tmpout);
-  }
-
-  if(outfilename == "null") cout << tmpout.str();
-  else {
-    ofstream of(outfilename, outmode);
-    of << tmpout.str();
-    of.close();
+    if (pflag) {
+      ostringstream fluxname;
+      fluxname << subpath << "/flux-" << phi[i_exp];
+      specns.compare(spec, subpath == "null" ? "null" : fluxname.str());
+    }
+    sum += calc_chi2(chc, spec, exn[i_exp], phi[i_exp], subpath);
   }
 
   printDebugMsg("Routine", "<<chi2: %f", sum);

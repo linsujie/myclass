@@ -1,5 +1,6 @@
 #include"load_dat.h"
 #include<iostream>
+#include<cstdlib>
 
 using std::vector;
 using std::string;
@@ -77,3 +78,83 @@ int load_dat::print() const {
 
   return 0;
 }
+
+const char* enum2str(load_dat::choice chc, int number) {
+  switch(chc) {
+  case load_dat::bcratio:
+    return enum2str(bcexpname(number));
+
+  case load_dat::beratio:
+    return enum2str(beexpname(number));
+
+  case load_dat::posifrac:
+    return enum2str(posifexpname(number));
+
+  case load_dat::pbarp:
+    return enum2str(ppexpname(number));
+
+  case load_dat::proton:
+    return enum2str(protexpname(number));
+
+  case load_dat::carbon:
+    return enum2str(carbexpname(number));
+
+  case load_dat::electron:
+    return enum2str(eleexpname(number));
+
+  case load_dat::totep:
+    return enum2str(totexpname(number));
+
+  case load_dat::positron:
+    return enum2str(positexpname(number));
+
+  default:
+    cout << "Error::load_dat::enum2str::could not find the enum names for this choice: " << chc << endl;
+    exit(0);
+  }
+}
+
+#define NAME(TYPE) ENUMNAME(TYPE)
+#define X(a) #a,
+NAME(ppexpname) = {
+#include "enumdef/ppexpname.def"
+};
+
+NAME(carbexpname) = {
+#include "enumdef/carbexpname.def"
+};
+
+NAME(eleexpname) = {
+#include "enumdef/eleexpname.def"
+};
+
+NAME(totexpname) = {
+#include "enumdef/totexpname.def"
+};
+
+NAME(posifexpname) = {
+#include "enumdef/posifexpname.def"
+};
+
+NAME(positexpname) = {
+#include "enumdef/positexpname.def"
+};
+
+NAME(protexpname) = {
+#include "enumdef/protexpname.def"
+};
+
+NAME(bcexpname) = {
+#include "enumdef/bcexpname.def"
+};
+
+NAME(beexpname) = {
+#include "enumdef/beexpname.def"
+};
+#undef X
+#undef NAME
+
+#define X(TYPE) ENUMANDSTR(TYPE, TYPE##_name)
+X(ppexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
+X(positexpname) X(protexpname) X(bcexpname) X(beexpname)
+#undef X

@@ -5,6 +5,7 @@ To load the data files
  *********************************************************************/
 
 #include"chisq.h"
+#include"enum_utils.h"
 
 class load_dat{
 public:
@@ -21,16 +22,51 @@ public:
 
   static const std::vector <std::vector <fluxes> > sub_table, deno_table;
   int print() const;
+
+};
+const char* enum2str(load_dat::choice chc, int number);
+
+#define X(a) a,
+enum ppexpname {
+#include "enumdef/ppexpname.def"
 };
 
-enum ppexpname { ppBESSPolar, ppBESSTeV, ppBESS00, ppBESS99, ppHEAT, ppPAMELA0806, ppPAMELA0812, ppPAMELA09, ppAMSpre };
-enum carbexpname {carbACE97,carbACE98,carbACE01,carbACE09,carbATIC0203,carbBalloon91,carbCREAM205,carbTRACER06};
-enum eleexpname {elePAMELA, eleAMS02, eleAMS02enlarge, eleAMS025GV, eleAMS0210GV, eleAMS2014, eleAMS20141GV};
-enum totexpname {totFH, totAMS02, totAMS025GV, totAMS0210GV, totAMS2014, totAMS20141GV};
-enum posifexpname {posiAMS02, posiAMS021GV, posiAMS025GV, posiAMS0210GV, posiAMS2014, posiAMS20141GV};
-enum positexpname {positAMS02, positAMS02enlarge, positAMS025GV, positAMS0210GV, positAMS2014, positAMS20141GV};
-enum protexpname {protAMS02rigidity, protAMS021GV, protPAMELA, protATIC, protCREAM, protAMS2015rigidity, protAMS2015, protAMS201520GeV};
-enum bcexpname {BCACE97, BCACE98, BCACE01, BCACE09, BCAMS0198, BCATIC0203, BCBALLOON91, BCCREAM04, BCHEAO0379, BCTRACER06, BCUlysses90, BCVoyager86, BCAMS02pre, BCHEAO0379enlarge};
-enum beexpname {BeACE97, BeACESIS97, BeBalloon73, BeBalloon7705, BeBalloon7709, BeIMP72, BeIMP74, BeISEE378, BeISOMAX98, BeUlysses90, BeVoyager7791, BeVoyager7798};
+enum carbexpname {
+#include "enumdef/carbexpname.def"
+};
+
+enum eleexpname {
+#include "enumdef/eleexpname.def"
+};
+
+enum totexpname {
+#include "enumdef/totexpname.def"
+};
+
+enum posifexpname {
+#include "enumdef/posifexpname.def"
+};
+
+enum positexpname {
+#include "enumdef/positexpname.def"
+};
+
+enum protexpname {
+#include "enumdef/protexpname.def"
+};
+
+enum bcexpname {
+#include "enumdef/bcexpname.def"
+};
+
+enum beexpname {
+#include "enumdef/beexpname.def"
+};
+#undef X
+
+#define X(TYPE) ENUMDECLEAR(TYPE)
+X(ppexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
+X(positexpname) X(protexpname) X(bcexpname) X(beexpname)
+#undef X
 
 #endif // for #ifndef _LOAD_DAT_H
