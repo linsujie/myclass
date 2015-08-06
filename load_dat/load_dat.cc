@@ -42,16 +42,16 @@ const int load_dat::common_fluxnum = iso_vectors.size() - iso_names.size(),
       totepname = path + "/totep.dat",
       positronname = path + "/positron.dat";
 
-const vector <chisq> load_dat::datas = {chisq(bcname),
-                                        chisq(bename),
-                                        chisq(posiname),
-                                        chisq(pbarpname),
-                                        chisq(protname, 2.7),
-                                        chisq(carbname),
-                                        chisq(oxyname),
-                                        chisq(elename, 3.0),
-                                        chisq(totepname, 3.0),
-                                        chisq(positronname, 3.0)};
+vector <chisq> load_dat::datas = {chisq(bcname),
+                                  chisq(bename),
+                                  chisq(posiname),
+                                  chisq(pbarpname),
+                                  chisq(protname, 2.7),
+                                  chisq(carbname),
+                                  chisq(oxyname),
+                                  chisq(elename, 3.0),
+                                  chisq(totepname, 3.0),
+                                  chisq(positronname, 3.0)};
 
 const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::belements},
                                                                  {load_dat::b10elements},
