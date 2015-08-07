@@ -17,12 +17,14 @@ public:
 
   enum choice {bcratio, beratio, posifrac, pbarp, proton, carbon, oxygen, electron, totep, positron};
   //ratio should be putted before fluxes.
-  static std::vector <chisq> datas;
   static const std::string data_name[10];
 
   static const std::vector <std::vector <fluxes> > sub_table, deno_table;
-  int print() const;
 
+  std::vector <chisq> datas;
+
+  load_dat();
+  int print() const;
 };
 const char* enum2str(load_dat::choice chc, int number);
 

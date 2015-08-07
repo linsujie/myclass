@@ -34,6 +34,14 @@ chisq::chisq(const string &filename, double Eindx) {
   extra_sigma();
 }
 
+chisq::chisq(const chisq &another) {
+  E = another.E;
+  F = another.F;
+  sigma = another.sigma;
+  total_sigma = another.total_sigma;
+  dataname = another.dataname;
+}
+
 const vector <double> emptyvec;
 int chisq::addexperiment(const string &line) {
   E.push_back(emptyvec);
@@ -78,6 +86,7 @@ int chisq::init(const string &filename, double Eindx) {
       }
     }
   }
+  if(dataname.size() == 0) cout << "The datafile " << filename << " is empty." << endl;
 
   return 0;
 }
