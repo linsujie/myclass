@@ -22,7 +22,7 @@ using std::ios;
 using std::setiosflags;
 using std::setprecision;
 
-spectrum::spectrum() {}
+spectrum::spectrum() : Es(0), Ee(0), factor(0) {}
 spectrum::spectrum(double *E_, double *F_, unsigned num): E(E_, E_ + num), F(F_, F_ + num), Es(0), Ee(0), factor(0) {}
 spectrum::spectrum(const vector <double> &E_, const vector <double> &F_):
   E(E_), F(F_), Es(0), Ee(0), factor(0) {
@@ -36,29 +36,10 @@ spectrum::spectrum(double Es_, double Ee_, double factor_):
   }
 }
 spectrum::spectrum(const string &filename, double Eindx): Es(0), Ee(0), factor(0) {
-  const char annota[2] = "#";
-  string line;
-  double tmpE, tmpF;
-
-  ifstream datfile(filename);
-  if (datfile.fail() || datfile.bad()) {
-    cout << "ERROR::spectrum::spectrum:fail to read from file " << filename << endl;
-    exit(1);
-  }
-
-  for (unsigned nline = 1; getline(datfile, line); nline++) {
-    if (line.size() == 0 || line.at(0) == annota[0]) continue;
-
-    istringstream is(line);
-
-    is >> tmpE, E.push_back(tmpE);
-    is >> tmpF, F.push_back(tmpF / pow(tmpE, Eindx));
-  }
-
-  datfile.close();
-
-  if(!ini_check()) cout << "reading emptyfile " << filename << endl;
+  ini(filename, Eindx);
 }
+
+
 
 inline int spectrum::clear_lab() {
   Es = 0;
@@ -71,6 +52,8 @@ inline int spectrum::clear_spec() {
   F.clear();
   return 0;
 }
+
+
 int spectrum::ini() {
   clear_lab();
   clear_spec();
@@ -104,6 +87,31 @@ int spectrum::ini(double Es_, double Ee_, double factor_) {
     F.push_back(0);
   }
 
+  return 0;
+}
+int spectrum::ini(const string &filename, double Eindx) {
+  const char annota[2] = "#";
+  string line;
+  double tmpE, tmpF;
+
+  ifstream datfile(filename);
+  if (datfile.fail() || datfile.bad()) {
+    cout << "ERROR::spectrum::spectrum:fail to read from file " << filename << endl;
+    exit(1);
+  }
+
+  for (unsigned nline = 1; getline(datfile, line); nline++) {
+    if (line.size() == 0 || line.at(0) == annota[0]) continue;
+
+    istringstream is(line);
+
+    is >> tmpE, E.push_back(tmpE);
+    is >> tmpF, F.push_back(tmpF / pow(tmpE, Eindx));
+  }
+
+  datfile.close();
+
+  if(!ini_check()) cout << "reading emptyfile " << filename << endl;
   return 0;
 }
 

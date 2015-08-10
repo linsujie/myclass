@@ -22,6 +22,7 @@ public:
   int ini(double *E_, double *F_, unsigned num);
   int ini(const std::vector <double> &E_, const std::vector <double> &F_);
   int ini(double Es_, double Ee_, double factor_);
+  int ini(const std::string &filename, double Eindx = 0);
 
   int print(std::ostringstream &os) const;
   int comp(const spectrum &another, std::ostringstream &os) const;
