@@ -26,33 +26,6 @@ const vector <string> load_dat::iso_names = { "primary_electrons", "secondary_el
 const int load_dat::common_fluxnum = iso_vectors.size() - iso_names.size(),
       load_dat::fluxnum = iso_vectors.size();
 
-#ifdef DATDIR
-  const string path = DATDIR,
-#else
-  const string path = ".",
-#endif
-      carbname = path + "/carbon.dat",
-      oxyname = path + "/oxygen.dat",
-      protname = path + "/proton.dat",
-      bcname = path + "/bcratio.dat",
-      bename = path + "/beratio.dat",
-      pbarpname = path + "/pbarp.dat",
-      elename = path + "/electron.dat",
-      posiname = path + "/posifrac.dat",
-      totepname = path + "/totep.dat",
-      positronname = path + "/positron.dat";
-
-vector <chisq> load_dat::datas = {chisq(bcname),
-                                  chisq(bename),
-                                  chisq(posiname),
-                                  chisq(pbarpname),
-                                  chisq(protname, 2.7),
-                                  chisq(carbname),
-                                  chisq(oxyname),
-                                  chisq(elename, 3.0),
-                                  chisq(totepname, 3.0),
-                                  chisq(positronname, 3.0)};
-
 const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::belements},
                                                                  {load_dat::b10elements},
                                                                  {load_dat::secposis, load_dat::dmposis},
@@ -68,6 +41,32 @@ const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::bele
                                                                  {load_dat::b9elements},
                                                                  {load_dat::prielecs, load_dat::secelecs, load_dat::dmelecs, load_dat::secposis, load_dat::dmposis},
                                                                  {load_dat::pelements}};
+
+#ifdef DATDIR
+  const string path = DATDIR,
+#else
+  const string path = ".",
+#endif
+      carbname = path + "/carbon.dat",
+      oxyname = path + "/oxygen.dat",
+      protname = path + "/proton.dat",
+      bcname = path + "/bcratio.dat",
+      bename = path + "/beratio.dat",
+      pbarpname = path + "/pbarp.dat",
+      elename = path + "/electron.dat",
+      posiname = path + "/posifrac.dat",
+      totepname = path + "/totep.dat",
+      positronname = path + "/positron.dat";
+load_dat::load_dat() : datas({chisq(bcname),
+                              chisq(bename),
+                              chisq(posiname),
+                              chisq(pbarpname),
+                              chisq(protname, 2.7),
+                              chisq(carbname),
+                              chisq(oxyname),
+                              chisq(elename, 3.0),
+                              chisq(totepname, 3.0),
+                              chisq(positronname, 3.0)}) { }
 
 int load_dat::print() const {
   for(unsigned i = 0; i < datas.size(); i++) {

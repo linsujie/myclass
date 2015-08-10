@@ -19,6 +19,7 @@ protected:
   int dealoutput(const std::string &filename, const std::ostringstream &os, std::ios_base::openmode outmode) const;
 public:
   chisq(const std::string &filename, double Eindx = 0);
+  chisq(const chisq &another);
 
   int printsizes() const;
 

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-//extern Particle global_particle;
+static load_dat load;
 Galprop* chi2prop::galpropmc = new Galprop;
 
 const vector <const char *> chi2prop::contriname = {"electrons", "secondary_electrons", "primary_DM_electron", "primary_electrons", "positrons", "secondary_positrons", "primary_DM_positron"};
@@ -213,7 +213,7 @@ double chi2prop::calc_chi2(load_dat::choice chc, const spectrum &spec, const vec
     ostringstream outfile;
     outfile << outpath << "/data-" << phi << "-" << enum2str(chc, exp_subgrp[j]);
 
-    subsum += load_dat::datas[chc].chi2(exp_subgrp[j], spec, pflag, outpath == "null" ? "null" : outfile.str());
+    subsum += load.datas[chc].chi2(exp_subgrp[j], spec, pflag, outpath == "null" ? "null" : outfile.str());
   }
   printDebugMsg("Routine", "<<calc_chi2: %f", subsum);
   return subsum;
