@@ -1,4 +1,4 @@
 main:test.o
-	g++ -llin test.o -o prop
+	g++ test.cc -lworks -llins -o prop
 clean:
 	rm *.o

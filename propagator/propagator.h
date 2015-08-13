@@ -43,9 +43,7 @@ private:
       }
 
   int theta(double x) const;
-  double phi_exp(int n, double z, double lambdaD2, int prime, int flag) const;
 
-  double G1d(double z, double lambdaD2, int flag) const;
   double G1d(double z, double lambdaD2) const;
 public:
 

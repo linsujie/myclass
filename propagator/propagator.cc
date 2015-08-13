@@ -6,50 +6,37 @@ using std::cout;
 using std::endl;
 using std::abs;
 
+/*********************************************************************
+  The Green function in 0809.5268
+*********************************************************************/
+
 class G1dfunc : public gfunction {
 private:
   double zob, L, nmax;
-  double phi_exp(int n, double z, double lambdaD2, int prime, int flag) const {
-    double kn;
-
-    if (prime == 0) {
-      kn = (n - 0.5) * PI / L;
-
-      //cout<<"kn is "<<kn<<endl;
-      if (flag == 0)
-        return sin(kn * (L - abs(z)));
-
-      else
-        return exp(-lambdaD2 * kn * kn / 4);
-
-    } else {
-      kn = n * PI / L;
-
-      if (flag == 0)
-        return sin(kn * (L - z));
-
-      else
-        return exp(-lambdaD2 * kn * kn / 4);
-    }
-  }
 
 public:
   G1dfunc(double zob_, double L_, double nmax_): zob(zob_), L(L_), nmax(nmax_) {}
-  double operator()(double z, double lambdaD2) const {
-    double sum, zn, zita;
+
+  double operator ()(double z, double lambdaD2) const{
+    double sum, zn, zita, pn, kn, knprime,
+           sqpilam = sqrt(PI * lambdaD2);
     zita = L * L / lambdaD2;
     sum = 0;
 
     if (zita >= 1) {
       for (int n = -nmax; n <= nmax; n++) {
-        zn = 2 * L * n + pow(-1., n) * z;
-        sum += pow(-1., n) / sqrt(PI * lambdaD2) * exp(-(zn - zob) * (zn - zob) / lambdaD2);
+        pn = (n % 2 ? -1 : 1);
+        zn = 2 * L * n + pn * z;
+        sum += pn / sqpilam * exp(-(zn - zob) * (zn - zob) / lambdaD2);
       }
 
     } else {
       for (int n = 1; n <= nmax; n++) {
-        sum += (phi_exp(n, z, lambdaD2, 0, 1) * phi_exp(n, z, lambdaD2, 0, 0) * phi_exp(n, zob, lambdaD2, 0, 0)
-                + phi_exp(n, z, lambdaD2, 1, 1) * phi_exp(n, z, lambdaD2, 1, 0) * phi_exp(n, zob, lambdaD2, 1, 0)) / L;
+        kn = (n - 0.5) * PI / L;
+        knprime = n * PI / L;
+
+        sum += (exp(-lambdaD2 * kn * kn / 4) * sin(kn * (L - abs(zob))) * sin(kn * (L - abs(z)))
+                + exp(-lambdaD2 * knprime * knprime / 4) * sin(knprime * (L - zob)) * sin(knprime * (L - z))) / L;
       }
     }
 
@@ -61,29 +48,6 @@ int Green::theta(double x) const {
   if (x > 0) return 1;
 
   else return 0;
-}
-double Green::phi_exp(int n, double z, double lambdaD2, int prime, int flag) const {
-  double kn;
-
-  if (prime == 0) {
-    kn = (n - 0.5) * PI / L;
-
-    //cout<<"kn is "<<kn<<endl;
-    if (flag == 0)
-      return sin(kn * (L - abs(z)));
-
-    else
-      return exp(-lambdaD2 * kn * kn / 4);
-
-  } else {
-    kn = n * PI / L;
-
-    if (flag == 0)
-      return sin(kn * (L - z));
-
-    else
-      return exp(-lambdaD2 * kn * kn / 4);
-  }
 }
 
 /*********************************************************************
@@ -97,29 +61,10 @@ double Green::phi_exp(int n, double z, double lambdaD2, int prime, int flag) con
   So we replace the first equation with the second one in when lambdaD2
   is large.
  *********************************************************************/
-double Green::G1d(double z, double lambdaD2, int flag) const {
-  double sum, zn;
-  sum = 0;
-
-  if (flag == 0) {
-    for (int n = -nmax; n <= nmax; n++) {
-      zn = 2 * L * n + pow(-1., n) * z;
-      sum += pow(-1., n) / sqrt(PI * lambdaD2) * exp(-(zn - zob) * (zn - zob) / lambdaD2);
-    }
-
-  } else if (flag == 1) {
-    for (int n = 1; n <= nmax; n++) {
-      sum += (phi_exp(n, z, lambdaD2, 0, 1) * phi_exp(n, z, lambdaD2, 0, 0) * phi_exp(n, zob, lambdaD2, 0, 0)
-              + phi_exp(n, z, lambdaD2, 1, 1) * phi_exp(n, z, lambdaD2, 1, 0) * phi_exp(n, zob, lambdaD2, 1, 0)) / L;
-    }
-  }
-
-  return sum;
-}
 
 double Green::G1d(double z, double lambdaD2) const{
-  double sum, zn, zita;
-  int pn;
+  double sum, zn, zita, pn, kn, knprime,
+         sqpilam = sqrt(PI * lambdaD2);
   zita = L * L / lambdaD2;
   sum = 0;
 
@@ -127,13 +72,16 @@ double Green::G1d(double z, double lambdaD2) const{
     for (int n = -nmax; n <= nmax; n++) {
       pn = (n % 2 ? -1 : 1);
       zn = 2 * L * n + pn * z;
-      sum += pn / sqrt(PI * lambdaD2) * exp(-(zn - zob) * (zn - zob) / lambdaD2);
+      sum += pn / sqpilam * exp(-(zn - zob) * (zn - zob) / lambdaD2);
     }
 
   } else {
     for (int n = 1; n <= nmax; n++) {
-      sum += (phi_exp(n, z, lambdaD2, 0, 1) * phi_exp(n, z, lambdaD2, 0, 0) * phi_exp(n, zob, lambdaD2, 0, 0)
-              + phi_exp(n, z, lambdaD2, 1, 1) * phi_exp(n, z, lambdaD2, 1, 0) * phi_exp(n, zob, lambdaD2, 1, 0)) / L;
+      kn = (n - 0.5) * PI / L;
+      knprime = n * PI / L;
+
+      sum += (exp(-lambdaD2 * kn * kn / 4) * sin(kn * (L - abs(zob))) * sin(kn * (L - abs(z)))
+              + exp(-lambdaD2 * knprime * knprime / 4) * sin(knprime * (L - zob)) * sin(knprime * (L - z))) / L;
     }
   }
 
