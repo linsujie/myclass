@@ -10,16 +10,13 @@
 
 using namespace std;
 
-static load_dat load;
-Galprop* chi2prop::galpropmc = new Galprop;
-
 const vector <const char *> chi2prop::contriname = {"electrons", "secondary_electrons", "primary_DM_electron", "primary_electrons", "positrons", "secondary_positrons", "primary_DM_positron"};
 
 #define SIZING(vec)\
   vec.resize(load_dat::fluxnum);\
   for(int i = 0; i < load_dat::fluxnum; i++) vec[i].resize(load_dat::iso_vectors[i].size() - 1);
 
-chi2prop::chi2prop(): outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field) {
+chi2prop::chi2prop(): outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), galpropmc(new Galprop), stype(force_field) {
   SIZING(Fluxes);
   SIZING(Fluxes_as);
 }

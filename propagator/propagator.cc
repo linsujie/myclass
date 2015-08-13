@@ -119,13 +119,15 @@ double Green::G1d(double z, double lambdaD2, int flag) const {
 
 double Green::G1d(double z, double lambdaD2) const{
   double sum, zn, zita;
+  int pn;
   zita = L * L / lambdaD2;
   sum = 0;
 
   if (zita >= 1) {
     for (int n = -nmax; n <= nmax; n++) {
-      zn = 2 * L * n + pow(-1., n) * z;
-      sum += pow(-1., n) / sqrt(PI * lambdaD2) * exp(-(zn - zob) * (zn - zob) / lambdaD2);
+      pn = (n % 2 ? -1 : 1);
+      zn = 2 * L * n + pn * z;
+      sum += pn / sqrt(PI * lambdaD2) * exp(-(zn - zob) * (zn - zob) / lambdaD2);
     }
 
   } else {
