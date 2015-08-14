@@ -174,7 +174,6 @@ double Green::Gq(double r, double z, double t, double E) const {
       K0 * pow(E / E0, delta) * E / sqrt(E * E + m_p * m_p) :
       K0 * pow(E / E0, delta);
   //beta would be almost 1 when E is large
-  //K = K0 * pow(E / E0, delta);
   lambdaD2 = 4 * K * t;
   return theta(t) / (PI * lambdaD2) * exp(-r * r / lambdaD2) * intp.lnask(abs(z) + ZMIN, lambdaD2);
 }
