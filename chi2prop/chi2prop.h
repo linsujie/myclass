@@ -29,6 +29,7 @@ private:
   vector <vector <vector <spectrum> > > Fluxes_as; // Fluxes_as[i_element][i_iso][i_phi]
   vector <bool> outdate, outdate_solar;
   vector <load_dat::fluxes> keep;
+  load_dat load;
   static const vector <const char *> contriname;
 
   spectrum get_spec(load_dat::fluxes element, int i_iso = -1, int i_phi = -1) const;
@@ -46,7 +47,7 @@ private:
   int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
 
 public:
-  static Galprop *galpropmc;
+  Galprop *galpropmc;
   enum errtype { no_exist_phi, no_exist_iso };
   enum solar_type {spherical, force_field};
   solar_type stype;
