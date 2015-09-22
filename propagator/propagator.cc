@@ -120,27 +120,33 @@ double Green::G(double r, double z, double t, double E) const {
 #define ZMIN 1e-300
 double Green::Gq(double r, double z, double t, double E) const {
   double K, lambdaD2;
-  K = K0 * pow(E / E0, delta);
+  K = E < 25.0 ?
+      K0 * pow(E / E0, delta) * E / sqrt(E * E + m_p * m_p) :
+      K0 * pow(E / E0, delta);
+  //beta would be almost 1 when E is large
   lambdaD2 = 4 * K * t;
   return theta(t) / (PI * lambdaD2) * exp(-r * r / lambdaD2) * intp.lnask(abs(z) + ZMIN, lambdaD2);
 }
 
 int Green::print() const {
-  Table2D::TabConsIter fiter = intp.lntab.value.begin(),
-    siter = intp.lntab.value.end();
-  siter--;
-
   cout << "K0: " << K0 << endl
     << "E0: " << E0 << endl
     << "delta: " << delta << endl
     << "L: " << L << endl
-    << "zob: " << zob << endl
-    << "intp with: " << endl
-    << "  lntab.xaxis: " << intp.lntab.xaxis.begin()->first << "... (size " << intp.lntab.xaxis.size() << ")" << endl
-    << "  lntab.yaxis: " << intp.lntab.yaxis.begin()->first << "... (size " << intp.lntab.yaxis.size() << ")" << endl
-    << "  lntab.value: " << fiter->second.begin()->second << "...  " << endl
-    << "               ..." << endl
-    << "               " << siter->second.begin()->second << "... " << endl;
+    << "zob: " << zob << endl;
+
+  if (intp.lntab.xaxis.size()) {
+    Table2D::TabConsIter fiter = intp.lntab.value.begin(),
+      siter = intp.lntab.value.end();
+    siter--;
+
+    cout  << "intp with: " << endl
+      << "  lntab.xaxis: " << intp.lntab.xaxis.begin()->first << "... (size " << intp.lntab.xaxis.size() << ")" << endl
+      << "  lntab.yaxis: " << intp.lntab.yaxis.begin()->first << "... (size " << intp.lntab.yaxis.size() << ")" << endl
+      << "  lntab.value: " << fiter->second.begin()->second << "...  " << endl
+      << "               ..." << endl
+      << "               " << siter->second.begin()->second << "... " << endl;
+  }
 
   return 0;
 }
