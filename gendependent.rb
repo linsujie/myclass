@@ -1,4 +1,4 @@
-#!/home/linsj/bin/ruby
+#!/bin/env ruby
 
 # To write collect the dependency infomation and write a dotscript
 class GenDot
@@ -35,7 +35,6 @@ class GenDot
     return [hname, ccname] if File.file?("#{fpath}/#{ccname}")
     return [hname] if File.file?("#{fpath}/#{hname}")
   end
-    
 
   def writecontent
     Dir.foreach(@path).reduce([]) { |a, e| a << pick(e) }.compact
@@ -52,7 +51,6 @@ class GenDot
     @stdext << stdn && @file.puts(stdn + STDSTY) unless @stdext.index(stdn)
     @file.puts("#{stdn} -> #{fn} #{lsty}")
   end
-  
 
   def pitem(name, line, linestyle = '')
     return unless /#include(?:<(?<std>\w+)>|"(?<nstd>\w+).h")/ =~ line

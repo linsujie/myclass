@@ -182,8 +182,16 @@ int chi2prop::print_flux(load_dat::choice chc, const string &fluxname, const vec
   if(i_phi >= 0) cout << "_with_phi_" << phi[i_phi];
   cout << endl;
 
+  string subpath = outpath + "/" + load_dat::data_name[chc];
+  if (outpath == "null") subpath = "null";
+  else {
+    mkdir(outpath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    mkdir(subpath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  }
+
   ostringstream fname;
-  fname << outpath << "/" << load_dat::data_name[chc] << "/" << fluxname << "-" << phi[i_phi];
+  fname << subpath << "/" << fluxname;
+  if (i_phi >= 0) fname << "-" << phi[i_phi];
 
   for (unsigned i = 0; i < sub.size(); i++) get_flux(sub[i]);
   for (unsigned i = 0; i < deno.size(); i++) get_flux(deno[i]);
