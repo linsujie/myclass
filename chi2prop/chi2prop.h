@@ -1,6 +1,13 @@
 #ifndef _CHI2PROP_H
 #define _CHI2PROP_H
 #include<sstream>
+
+#ifdef NEWGALPROP
+
+#include "GalpropWrapper.h"
+
+#else
+
 #include"ErrorLogger.h"
 #include "Configure.h"
 #include "Galdef.h"
@@ -12,6 +19,8 @@
 #include"galprop_internal.h"
 
 #include"config.h"
+
+#endif
 
 #include"spectrum.h"
 #include"load_dat.h"
@@ -44,18 +53,27 @@ private:
   spectrum sum_elements(const vector <load_dat::fluxes> &elevectors, int iphi = -1) const;
   double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, double phi, const string &outpath) const;
 
+#ifndef NEWGALPROP
   int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
+#endif
 
 public:
-  Galprop *galpropmc;
   enum errtype { no_exist_phi, no_exist_iso };
   enum solar_type {spherical, force_field};
   solar_type stype;
   double cposi, cpbar;
+#ifdef NEWGALPROP
+  GalpropWrapper *galpropmc;
+
+  chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath = "../../FITS", const string &outputPrefix = "galp");
+#else
+  Galprop *galpropmc;
+
   chi2prop();
-  int setphi(const vector <double> &phi_);
-  int setkeep(const vector <load_dat::fluxes> &keep_);
   int setpara(double *p, model_kind mod);
+#endif
+  int setphi(const vector <double> &phi_) throw();
+  int setkeep(const vector <load_dat::fluxes> &keep_) throw();
 
   double chi2(const vector <vector <int> > &exn, load_dat::choice choice, bool pflag = false, const string &outpath = "null", ios_base::openmode outmode = ios_base::out);
 
@@ -65,10 +83,13 @@ public:
 
   static int err_info(errtype &err) throw();
 
-  int start(int iter);
+  int start(int iter) throw();
+
+#ifndef NEWGALPROP
   int run();
   int run(const char *defname);
   int run(double *p, int iter, model_kind mod);
   int run(double *p, int iter, model_kind mod, bool pflag);
+#endif
 };
 #endif // for #ifndef _CHI2PROP_H

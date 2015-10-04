@@ -99,11 +99,14 @@ end
 
 def compile(cls, t, create = nil)
   dbg = DLIST.include?(cls) ? DEBUG : nil
+
   datdir = %Q(-D DATDIR=\\"#{PREFIX}/lib/#{cls}_data\\")
   dat = DATALIST.include?(cls) ? datdir : ''
 
-  cmd = "#{CC} #{CFLAG} #{dbg} #{dat} #{getinc(cls)} #{DEPEND.inc_to_s}" \
-    "#{create} -fPIC #{t.source} -o #{t.name}"
+  gversion = GALPVERSION == :v55 ? '-D NEWGALPROP' : ''
+
+  cmd = "#{CC} #{CFLAG} #{dbg} #{dat} #{gversion} #{getinc(cls)} " \
+    "#{DEPEND.inc_to_s} #{create} -fPIC #{t.source} -o #{t.name}"
 
   sys(cmd, "Compiling #{t.name}")
 end

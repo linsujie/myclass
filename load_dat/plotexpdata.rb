@@ -17,6 +17,7 @@ Gnuplot.open do |gp|
     plot.xlabel 'E_k(GeV/nucleon)'
     plot.ytics "in format '10^{%T}'"
     plot.xtics "in format '10^{%T}'"
+    plot.logscale 'xy'
 
     plot.data = DAT.map { |k, v| getdataset(k, v) }
   end

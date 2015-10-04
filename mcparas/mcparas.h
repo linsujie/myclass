@@ -41,8 +41,13 @@ public:
   X(errtype); X(pppc_or_us); X(dm_mode); X(prop_mode); X(inject_mode); X(mix_branch);
 #undef X
 
+#ifdef NEWGALPROP
+  mcparas(GalpropWrapper *galprop);
+  int setgalprop(GalpropWrapper *galprop) throw();
+#else
   mcparas(Galprop *galprop);
   int setgalprop(Galprop *galprop) throw();
+#endif
   int setpara(const double *p_) throw();
 
   static unsigned getenum(const string &enum_name);

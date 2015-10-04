@@ -16,18 +16,34 @@ const vector <const char *> chi2prop::contriname = {"electrons", "secondary_elec
   vec.resize(load_dat::fluxnum);\
   for(int i = 0; i < load_dat::fluxnum; i++) vec[i].resize(load_dat::iso_vectors[i].size() - 1);
 
-chi2prop::chi2prop(): outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), galpropmc(new Galprop), stype(force_field) {
-  SIZING(Fluxes);
-  SIZING(Fluxes_as);
+#ifdef NEWGALPROP
+chi2prop::chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath, const string &outputPrefix):
+#else
+chi2prop::chi2prop():
+#endif
+  outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field),
+#ifdef NEWGALPROP
+  galpropmc(new GalpropWrapper)
+#else
+  galpropmc(new Galprop)
+#endif
+{
+
+#ifdef NEWGALPROP
+    galpropmc->configure.init(galdefPath, fitsPath, outputPath, outputPrefix);
+#endif
+
+    SIZING(Fluxes);
+    SIZING(Fluxes_as);
 }
 
-int chi2prop::setphi(const vector <double> &phi_) {
+int chi2prop::setphi(const vector <double> &phi_) throw() {
   phi = phi_;
   std::fill(outdate_solar.begin(), outdate_solar.end(), true);
   return 0;
 }
 
-int chi2prop::setkeep(const vector <load_dat::fluxes> &keep_) {
+int chi2prop::setkeep(const vector <load_dat::fluxes> &keep_) throw() {
   keep = keep_;
   return 0;
 }
@@ -85,7 +101,12 @@ int chi2prop::get_flux(load_dat::fluxes element) {
   outdate[element] = false;
   outdate_solar[element] = true;
 
+#ifdef NEWGALPROP
+  unsigned ndat=galpropmc->get_npgrid();
+#else
   unsigned ndat=galpropmc->gcr[galpropmc->n_species-1].n_pgrid;
+#endif
+
   double *Etmp = new double[ndat],
          *Ftmp = new double[ndat];
 
@@ -266,6 +287,7 @@ double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, b
   return sum;
 }
 
+#ifndef NEWGALPROP
 int chi2prop::run(double *p, int iter, model_kind mod, bool pflag, const char *defname) {
   printDebugMsg("Routine", ">> run:\titer %d\tpflag %d\tGALDEF %s\n", iter, pflag, defname);
   std::fill(outdate.begin(), outdate.end(), true);
@@ -293,8 +315,9 @@ int chi2prop::run() {
   double *p= 0;
   return run(p, 0, DEFAULT, true, "default");
 }
+#endif
 
-int chi2prop::start(int iter) {
+int chi2prop::start(int iter) throw() {
   printDebugMsg("Routine", ">> start:\titer %d", iter);
   std::fill(outdate.begin(), outdate.end(), true);
   if(0 != iter)
@@ -305,9 +328,11 @@ int chi2prop::start(int iter) {
   return res;
 }
 
+#ifndef NEWGALPROP
 int chi2prop::setpara(double *p, model_kind mod) {
   return galpropmc->set_params(p, mod);
 }
+#endif
 
 int chi2prop::err_info(errtype &err) throw() {
   switch(err) {

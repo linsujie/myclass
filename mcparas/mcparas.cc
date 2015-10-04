@@ -36,9 +36,18 @@ NAME(mix_branch) = {
   X(errtype) X(pppc_or_us) X(dm_mode) X(prop_mode) X(inject_mode) X(mix_branch)
 #undef X
 
-mcparas::mcparas(Galprop *galprop): galdef(&(galprop->galdef)) {}
+#ifdef NEWGALPROP
+mcparas::mcparas(GalpropWrapper *galprop):
+#else
+mcparas::mcparas(Galprop *galprop):
+#endif
+  galdef(&(galprop->galdef)) {}
 
+#ifdef NEWGALPROP
+int mcparas::setgalprop(GalpropWrapper *galprop) throw() {
+#else
 int mcparas::setgalprop(Galprop *galprop) throw() {
+#endif
   galdef = &(galprop->galdef);
   return 0;
 }
