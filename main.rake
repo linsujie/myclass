@@ -51,20 +51,18 @@ COLLEC = STATIC ? 'ar crs' : "#{CC} #{CFLAG} -shared -fPIC -o"
 DEPNAME = 'DEPENDENCY'
 def gendepend(srccls)
   puts "Generating depends for #{srccls}"
-  res = `#{CC} #{CFLAG} #{INC} -E -MM -fPIC #{name(srccls, :cc)}`.split(' ')
+  res = `#{CC} #{CFLAG} #{INC} #{DEPEND.inc_to_s} -E -MM -fPIC #{name(srccls, :cc)}`.split(' ')
     .select { |x| x != '\\' }#.map { |x| x.sub(/[.]h$/, '.h.gch') } # for precompiling
   [res[0].sub(/^(\w+).o:$/, '\1/\1.o'), res[1..-1]]
 end
 
-def gendeps
-  file = File.new(DEPNAME, 'w')
-  file.puts JSON.generate(Hash[CLIST.map { |x| gendepend(x) }])
-  file.close
-end
+NO_DEP_WARN = 'WARNNING::'.bright + \
+  "There is no dependency file, please execute:\n".color(:white) + \
+  "   rake dep\n" + 'to generate it'.color(:white)
 
 def readdepend
-  gendeps unless File.exist?(DEPNAME) && File.size(DEPNAME) != 0
-  JSON.parse(File.new(DEPNAME).read)
+  depend_exist = File.exist?(DEPNAME) && File.size(DEPNAME) != 0
+  depend_exist ? JSON.parse(File.new(DEPNAME).read) : puts(NO_DEP_WARN)
 end
 
 DEPENDS = readdepend
@@ -79,7 +77,9 @@ end
 
 desc 'Generating (refresh) the dependency for all the classes'
 task :dep do
-  gendeps
+  file = File.new(DEPNAME, 'w')
+  file.puts JSON.generate(Hash[CLIST.map { |x| gendepend(x) }])
+  file.close
 end
 
 desc 'Installing the libraries'
@@ -112,6 +112,7 @@ def compile(cls, t, create = nil)
 end
 
 CLIST.each do |cls|
+  break unless DEPENDS
   file name(cls) => DEPENDS[name(cls)] do |t|
     compile(cls, t, '-c')
   end
