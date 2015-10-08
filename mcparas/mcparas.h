@@ -62,6 +62,11 @@ public:
   int proton_set(inject_mode bks) throw();
   int proton_set() throw();
 
+#ifdef NEWGALPROP
+  int set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, const double *point) throw();
+  int helium_set(inject_mode bks) throw();
+#endif
+
   int electron_set(inject_mode bks) throw();
 
   int exotic_set() throw();

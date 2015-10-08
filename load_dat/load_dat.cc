@@ -7,13 +7,14 @@ using std::string;
 using std::cout;
 using std::endl;
 
-const string load_dat::data_name[10] = {"BC", "Be", "Posifrac", "pbarp", "Proton", "Carbon", "Oxygen", "Electron", "TotEP", "Positron"};
+const string load_dat::data_name[11] = {"BC", "Be", "Posifrac", "pbarp", "Proton", "Helium", "Carbon", "Oxygen", "Electron", "TotEP", "Positron"};
 
 // recording the Z and A of all the isotopes to be calculated.
 const vector <vector <int> > load_dat::iso_vectors = {{5, 10, 11},
                                                       {6, 12, 13},
                                                       {8, 16, 17, 18},
                                                       {1, 1},
+                                                      {2, 3, 4},
                                                       {4, 10},
                                                       {4, 9},
                                                       {-1, 0}, {-1, 0}, {-1, 0},
@@ -31,6 +32,7 @@ const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::bele
                                                                  {load_dat::secposis, load_dat::dmposis},
                                                                  {load_dat::secantip, load_dat::dmantip},
                                                                  {load_dat::pelements},
+                                                                 {load_dat::heelements},
                                                                  {load_dat::celements},
                                                                  {load_dat::oelements},
                                                                  {load_dat::prielecs, load_dat::secelecs, load_dat::dmelecs},
@@ -50,6 +52,7 @@ const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::bele
       carbname = path + "/carbon.dat",
       oxyname = path + "/oxygen.dat",
       protname = path + "/proton.dat",
+      heliumname = path + "/helium.dat",
       bcname = path + "/bcratio.dat",
       bename = path + "/beratio.dat",
       pbarpname = path + "/pbarp.dat",
@@ -62,6 +65,7 @@ load_dat::load_dat() : datas({chisq(bcname),
                               chisq(posiname),
                               chisq(pbarpname),
                               chisq(protname, 2.7),
+                              chisq(heliumname, 2.7),
                               chisq(carbname),
                               chisq(oxyname),
                               chisq(elename, 3.0),
@@ -94,6 +98,9 @@ const char* enum2str(load_dat::choice chc, int number) {
 
   case load_dat::proton:
     return enum2str(protexpname(number));
+
+  case load_dat::helium:
+    return enum2str(heliumexpname(number));
 
   case load_dat::carbon:
     return enum2str(carbexpname(number));
@@ -143,6 +150,10 @@ NAME(protexpname) = {
 #include "enumdef/protexpname.def"
 };
 
+NAME(heliumexpname) = {
+#include "enumdef/heliumexpname.def"
+};
+
 NAME(bcexpname) = {
 #include "enumdef/bcexpname.def"
 };
@@ -155,5 +166,5 @@ NAME(beexpname) = {
 
 #define X(TYPE) ENUMANDSTR(TYPE, TYPE##_name)
 X(ppexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
-X(positexpname) X(protexpname) X(bcexpname) X(beexpname)
+X(positexpname) X(protexpname) X(heliumexpname) X(bcexpname) X(beexpname)
 #undef X

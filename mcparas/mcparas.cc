@@ -64,6 +64,7 @@ double mcparas::getp() throw() {
 }
 
 int mcparas::print() const throw() {
+  Galdef::specProperties &he4prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 4)];
   cout << "D0_xx :\t"               << galdef->D0_xx                 << endl
     << "eta :\t"                    << galdef->eta                   << endl
     << "D_rigid_br :\t"             << galdef->D_rigid_br            << endl
@@ -81,6 +82,12 @@ int mcparas::print() const throw() {
     << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
     << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
     << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
+    << endl
+    << "helium.g_0 :\t"             << he4prop.g_0                   << endl
+    << "helium.rigid_br0 :\t"       << he4prop.rigid_br0             << endl
+    << "helium.g_1 :\t"             << he4prop.g_1                   << endl
+    << "helium.rigid_br :\t"        << he4prop.rigid_br              << endl
+    << "helium.g_2 :\t"             << he4prop.g_2                   << endl
     << endl
     << "electron_norm_flux :\t"     << galdef->electron_norm_flux    << endl
     << "electron_g_0 :\t"           << galdef->electron_g_0          << endl
@@ -245,6 +252,51 @@ int mcparas::propagation_set(prop_mode prop) throw() {
   galdef->diff_reacc = diff_reacc[prop];
 
   p_index += tmpind;
+  return 0;
+}
+
+#ifdef NEWGALPROP
+int mcparas::set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, const double *point) throw() {
+  prop.rigid_br0 = 0;
+
+  switch(bks) {
+  case nbk:
+    prop.g_1 = point[0];
+    prop.g_2 = point[0];
+    prop.rigid_br = 10 * 1e3;
+    p_index += 1;
+    break;
+
+  case onebk:
+    prop.g_1 = point[0];
+    prop.g_2 = point[1];
+    prop.rigid_br = point[2] * 1e3;
+    p_index += 3;
+    break;
+
+  case twobk:
+    prop.g_0 = point[0];
+    prop.rigid_br0 = point[1] * 1e3;
+    prop.g_1 = point[2];
+    prop.rigid_br = point[3] * 1e3;
+    prop.g_2 = point[4];
+    p_index += 5;
+
+  default:
+    break;
+  }
+  return 0;
+}
+#endif
+
+int mcparas::helium_set(inject_mode bks) throw() {
+  const double *point = p + p_index;
+
+  Galdef::specProperties &he3prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 3)],
+    &he4prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 4)];
+
+  set_iso_injection(he3prop, bks, point);
+  set_iso_injection(he4prop, bks, point);
   return 0;
 }
 
