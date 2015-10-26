@@ -19,18 +19,18 @@ const vector <vector <int> > load_dat::iso_vectors = {{5, 10, 11},
                                                       {4, 9},
                                                       {-1, 0}, {-1, 0}, {-1, 0},
                                                       {1, 0}, {1, 0},
-                                                      {-1, 1}, {-1, 1}
+                                                      {-1, 1}, {-1, 1}, {-1, 1}
 };
 const vector <string> load_dat::iso_names = { "primary_electrons", "secondary_electrons", "primary_DM_electron",
                                     "secondary_positrons", "primary_DM_positron",
-                                    "secondary_antiprotons", "primary_DM_antip" };
+                                    "secondary_antiprotons", "tertiary_antiprotons", "primary_DM_antip" };
 const int load_dat::common_fluxnum = iso_vectors.size() - iso_names.size(),
       load_dat::fluxnum = iso_vectors.size();
 
 const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::belements},
                                                                  {load_dat::b10elements},
                                                                  {load_dat::secposis, load_dat::dmposis},
-                                                                 {load_dat::secantip, load_dat::dmantip},
+                                                                 {load_dat::secantip, load_dat::terantip, load_dat::dmantip},
                                                                  {load_dat::pelements},
                                                                  {load_dat::heelements},
                                                                  {load_dat::celements},

@@ -2,6 +2,7 @@
 #include<iostream>
 #include<fstream>
 #include<sys/stat.h>
+#include"vec_utils.h"
 #include"mydebug.h"
 #include"chi2prop.h"
 #include"vec_utils.h"
@@ -127,12 +128,12 @@ vector <load_dat::fluxes> con_vectors(load_dat::choice chc) {
 }
 
 int chi2prop::get_flux(load_dat::choice chc){
-  printDebugMsg("Routine", ">>get_flux");
+  printDebugMsg("Routine", ">>get_flux: by choice %d", chc);
 
   vector <load_dat::fluxes> elements = con_vectors(chc);
   for(unsigned i = 0; i < elements.size(); i++) get_flux(elements[i]);
 
-  printDebugMsg("Routine", "<<get_flux");
+  printDebugMsg("Routine", "<<get_flux: by choice");
   return 0;
 }
 

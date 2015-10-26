@@ -89,6 +89,10 @@ int mcparas::print() const throw() {
     << "helium.rigid_br :\t"        << he4prop.rigid_br              << endl
     << "helium.g_2 :\t"             << he4prop.g_2                   << endl
     << endl
+    << "isotopic_abundance[1][1] :\t" << galdef->isotopic_abundance[1][1]  << endl
+    << "isotopic_abundance[2][3] :\t" << galdef->isotopic_abundance[2][3]  << endl
+    << "isotopic_abundance[2][4] :\t" << galdef->isotopic_abundance[2][4]  << endl
+    << endl
     << "electron_norm_flux :\t"     << galdef->electron_norm_flux    << endl
     << "electron_g_0 :\t"           << galdef->electron_g_0          << endl
     << "electron_rigid_br0 :\t"     << galdef->electron_rigid_br0    << endl
@@ -264,15 +268,13 @@ int mcparas::set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, c
     prop.g_1 = point[0];
     prop.g_2 = point[0];
     prop.rigid_br = 10 * 1e3;
-    p_index += 1;
-    break;
+    return 1;
 
   case onebk:
     prop.g_1 = point[0];
     prop.g_2 = point[1];
     prop.rigid_br = point[2] * 1e3;
-    p_index += 3;
-    break;
+    return 3;
 
   case twobk:
     prop.g_0 = point[0];
@@ -280,7 +282,7 @@ int mcparas::set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, c
     prop.g_1 = point[2];
     prop.rigid_br = point[3] * 1e3;
     prop.g_2 = point[4];
-    p_index += 5;
+    return 5;
 
   default:
     break;
@@ -295,7 +297,7 @@ int mcparas::helium_set(inject_mode bks) throw() {
   Galdef::specProperties &he3prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 3)],
     &he4prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 4)];
 
-  set_iso_injection(he3prop, bks, point);
+  p_index += set_iso_injection(he3prop, bks, point);
   set_iso_injection(he4prop, bks, point);
   return 0;
 }

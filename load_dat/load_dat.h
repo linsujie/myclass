@@ -9,7 +9,7 @@ To load the data files
 
 class load_dat{
 public:
-  enum fluxes {belements, celements, oelements, pelements, heelements, b10elements, b9elements, prielecs, secelecs, dmelecs, secposis, dmposis, secantip, dmantip};
+  enum fluxes {belements, celements, oelements, pelements, heelements, b10elements, b9elements, prielecs, secelecs, dmelecs, secposis, dmposis, secantip, terantip, dmantip};
   //Those determined with name should be located behind others
   static const int fluxnum, common_fluxnum;
   static const std::vector <std::vector <int> > iso_vectors;
