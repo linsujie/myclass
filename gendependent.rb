@@ -18,30 +18,31 @@ class GenDot
   def write(wtcc, wtstd)
     (@wtc, @wtst) = [wtcc, wtstd]
     @file.puts("#!/bin/dot\ndigraph Depend {\n")
-    writecontent
+    (Dir.glob("#{@path}/*") << "#{@path}/").each { |path| writecontent(path) }
     @file.puts('}')
     @file.close
   end
 
   private
 
-  def avail_dir?(spath)
-    spath != '.' && spath != '..' && File.directory?("#{@path}/#{spath}")
+  def available_dir?(path, spath)
+    spath != '.' && spath != '..' && File.directory?("#{path}/#{spath}")
   end
 
-  def pick(spath)
-    (hname, ccname,fpath) = ["#{spath}.h", "#{spath}.cc", "#{@path}/#{spath}"]
-    return unless avail_dir?(spath)
+  def pick(path, spath)
+    (hname, ccname,fpath) = ["#{spath}.h", "#{spath}.cc", "#{path}/#{spath}"]
+    return unless available_dir?(path, spath)
     return [hname, ccname] if File.file?("#{fpath}/#{ccname}")
     return [hname] if File.file?("#{fpath}/#{hname}")
   end
 
-  def writecontent
-    Dir.foreach(@path).reduce([]) { |a, e| a << pick(e) }.compact
+  def writecontent(path)
+    return unless File.directory?(path)
+    Dir.foreach(path).reduce([]) { |a, e| a << pick(path, e) }.compact
     .each do |fname|
       (hname, cname) = fname.map { |x| x.gsub(/(.cc|.h)$/, '') }
       (fhname, fcname) =
-        fname.map { |x| "#{@path}/#{x.gsub(/(.cc|.h)$/, '')}/#{x}" }
+        fname.map { |x| "#{path}/#{x.gsub(/(.cc|.h)$/, '')}/#{x}" }
       File.new(fhname).each { |ln| pitem(hname, ln) }
       File.new(fcname).each { |ln| pitem(cname, ln, CCLSTY) } if @wtc && cname
     end

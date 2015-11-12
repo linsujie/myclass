@@ -5,7 +5,7 @@ require 'json'
 require 'rainbow/ext/string'
 
 def name(x, post = :o)
-  "#{x}/#{x}.#{post}"
+  "#{x}/#{File.basename(x)}.#{post}"
 end
 
 def getcls(x)
@@ -14,7 +14,7 @@ end
 
 def getinc(cls)
   (DEPENDS[name(cls)] or return("-I #{cls}"))[1..-1]
-  .map { |x| "-I #{getcls(x)}" }.join(' ')
+  .map { |x| "-I #{File.dirname(x)}" }.join(' ')
 end
 
 def sys(str, info)
@@ -22,10 +22,10 @@ def sys(str, info)
   system(str)
 end
 
-DATALIST = %w(anaspec anaspec_pppc load_dat)
+DATALIST = %w(dm_production/anaspec dm_production/anaspec_pppc load_dat)
 
-FLIST =  FileList['*'].select { |x| File.exist?(name(x, :h)) } - EXCLUDE
-CLIST = FileList['*'].select { |x| File.exist?(name(x, :cc)) } - EXCLUDE
+FLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :h)) } - EXCLUDE
+CLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :cc)) } - EXCLUDE
 HLIST = FLIST - CLIST
 
 WLIST = FileList[%w(chi2prop mcparas propagator create_source)]
@@ -51,9 +51,10 @@ COLLEC = STATIC ? 'ar crs' : "#{CC} #{CFLAG} -shared -fPIC -o"
 DEPNAME = 'DEPENDENCY'
 def gendepend(srccls)
   puts "Generating depends for #{srccls}"
-  res = `#{CC} #{CFLAG} #{INC} #{DEPEND.inc_to_s} -E -MM -fPIC #{name(srccls, :cc)}`.split(' ')
-    .select { |x| x != '\\' }#.map { |x| x.sub(/[.]h$/, '.h.gch') } # for precompiling
-  [res[0].sub(/^(\w+).o:$/, '\1/\1.o'), res[1..-1]]
+  res = `#{CC} #{CFLAG} #{INC} #{DEPEND.inc_to_s} -E -MM -fPIC #{name(srccls, :cc)}`
+       .split(' ').select { |x| x != '\\' }
+       #.map { |x| x.sub(/[.]h$/, '.h.gch') } # for precompiling
+  [name(srccls), res[1..-1]]
 end
 
 NO_DEP_WARN = 'WARNNING::'.bright + \
@@ -84,12 +85,13 @@ end
 
 desc 'Installing the libraries'
 task :install do
-  incfile = WINC.map { |x| "#{x}/#{x}.h" }.to_s
+  incfile = WINC.map { |x| "#{x}/#{File.basename(x)}.h" }.to_s
 
   ins = [[incfile, "#{PREFIX}/include"]] + \
     [[Dir.glob('*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
+    [[Dir.glob('*/*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
     CLOBBER.map { |x| File.exist?(x) && [x, "#{PREFIX}/lib"] } + \
-    DATALIST.map { |c| ["#{c}/#{c}_data/*", "#{PREFIX}/lib/#{c}_data"] }
+    DATALIST.map { |c| ["#{c}/#{File.basename(c)}_data/*", "#{PREFIX}/lib/#{File.basename(c)}_data"] }
 
   ins.select { |x| x }.each do |o, t|
     FileUtils.mkdir_p(t)
