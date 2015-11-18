@@ -91,7 +91,7 @@ task :install do
     [[Dir.glob('*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
     [[Dir.glob('*/*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
     CLOBBER.map { |x| File.exist?(x) && [x, "#{PREFIX}/lib"] } + \
-    DATALIST.map { |c| ["#{c}/#{File.basename(c)}_data/*", "#{PREFIX}/lib/#{File.basename(c)}_data"] }
+    DATALIST.map { |c| ["#{c}/#{File.basename(c)}_data/*", "#{PREFIX}/lib/#{c}_data"] }
 
   ins.select { |x| x }.each do |o, t|
     FileUtils.mkdir_p(t)
