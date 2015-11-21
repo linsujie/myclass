@@ -17,20 +17,20 @@ const vector <const char *> chi2prop::contriname = {"electrons", "secondary_elec
   vec.resize(load_dat::fluxnum);\
   for(int i = 0; i < load_dat::fluxnum; i++) vec[i].resize(load_dat::iso_vectors[i].size() - 1);
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
 chi2prop::chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath, const string &outputPrefix):
 #else
 chi2prop::chi2prop():
 #endif
   outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field),
-#ifdef NEWGALPROP
+#ifdef GALP_V55
   galpropmc(new GalpropWrapper)
 #else
   galpropmc(new Galprop)
 #endif
 {
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
     galpropmc->configure.init(galdefPath, fitsPath, outputPath, outputPrefix);
 #endif
 
@@ -102,7 +102,7 @@ int chi2prop::get_flux(load_dat::fluxes element) {
   outdate[element] = false;
   outdate_solar[element] = true;
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
   unsigned ndat=galpropmc->get_npgrid();
 #else
   unsigned ndat=galpropmc->gcr[galpropmc->n_species-1].n_pgrid;
@@ -288,7 +288,7 @@ double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, b
   return sum;
 }
 
-#ifndef NEWGALPROP
+#ifndef GALP_V55
 int chi2prop::run(double *p, int iter, model_kind mod, bool pflag, const char *defname) {
   printDebugMsg("Routine", ">> run:\titer %d\tpflag %d\tGALDEF %s\n", iter, pflag, defname);
   std::fill(outdate.begin(), outdate.end(), true);
@@ -329,7 +329,7 @@ int chi2prop::start(int iter) throw() {
   return res;
 }
 
-#ifndef NEWGALPROP
+#ifndef GALP_V55
 int chi2prop::setpara(double *p, model_kind mod) {
   return galpropmc->set_params(p, mod);
 }

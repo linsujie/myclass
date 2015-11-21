@@ -41,7 +41,7 @@ public:
   X(errtype); X(pppc_or_us); X(dm_mode); X(prop_mode); X(inject_mode); X(mix_branch);
 #undef X
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
   mcparas(GalpropWrapper *galprop);
   int setgalprop(GalpropWrapper *galprop) throw();
 #else
@@ -62,7 +62,7 @@ public:
   int proton_set(inject_mode bks) throw();
   int proton_set() throw();
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
   int set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, const double *point) throw();
   int helium_set(inject_mode bks) throw();
 #endif

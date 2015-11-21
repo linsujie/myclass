@@ -2,7 +2,7 @@
 #define _CHI2PROP_H
 #include<sstream>
 
-#ifdef NEWGALPROP
+#ifdef GALP_V55
 
 #include "GalpropWrapper.h"
 
@@ -53,7 +53,7 @@ private:
   spectrum sum_elements(const vector <load_dat::fluxes> &elevectors, int iphi = -1) const;
   double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, double phi, const string &outpath) const;
 
-#ifndef NEWGALPROP
+#ifndef GALP_V55
   int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
 #endif
 
@@ -62,7 +62,7 @@ public:
   enum solar_type {spherical, force_field};
   solar_type stype;
   double cposi, cpbar;
-#ifdef NEWGALPROP
+#ifdef GALP_V55
   GalpropWrapper *galpropmc;
 
   chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath = "../../FITS", const string &outputPrefix = "galp");
@@ -85,7 +85,7 @@ public:
 
   int start(int iter) throw();
 
-#ifndef NEWGALPROP
+#ifndef GALP_V55
   int run();
   int run(const char *defname);
   int run(double *p, int iter, model_kind mod);
