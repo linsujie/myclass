@@ -7,7 +7,7 @@
 project_type = library -- { all, build, clang, data, doc, game, server, shell, web, ... }
 
 -- Project Settings:
-version = 10
+version = 12
 project_name = 'myclass'
 
 -- File And Folder Filters:
@@ -15,6 +15,9 @@ folder_filter_mode = exclude -- { include, exclude }
 folder_filter += sundries
 file_filter += cc,h,configure,rb
 file_ignore_pattern += test
+
+-- Editing:
+indent = 4
 
 -- Building:
 builder = gcc -- { gulp, grunt, gcc, xcode, vs, unity3d, ... }
