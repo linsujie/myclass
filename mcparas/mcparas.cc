@@ -422,6 +422,7 @@ int mcparas::branch_set(double *branches) const throw(errtype) {
   galdef->DM_double10 = branches[8];
   galdef->DM_double11 = branches[9];
   galdef->DM_double12 = branches[10];
+  galdef->DM_double13 = branches[11];
 
   return 0;
 }
