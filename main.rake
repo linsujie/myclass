@@ -4,7 +4,8 @@ require 'rubygems'
 require 'json'
 require 'rainbow/ext/string'
 
-load '~/.galprop/galpdepend/galpdepend.rb' if File.exist?(GALPWRAPPER_DIR)
+WITH_GALP = File.exist?(GALPWRAPPER_DIR)
+load '~/.galprop/galpdepend/galpdepend.rb' if WITH_GALP
 
 def name(x, post = :o)
   "#{x}/#{File.basename(x)}.#{post}"
@@ -24,13 +25,13 @@ def sys(str, info)
   system(str)
 end
 
-DATALIST = %w(dm_production/anaspec dm_production/anaspec_pppc load_dat)
+DATALIST = %w(dm_production/anaspec dm_production/anaspec_pppc dm_production/anaspec_zhou load_dat)
 
 FLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :h)) } - EXCLUDE
 CLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :cc)) } - EXCLUDE
 HLIST = FLIST - CLIST
 
-WLIST = FileList[%w(chi2prop mcparas propagator create_source)]
+WLIST = FileList[%w(chi2prop mcparas propagator create_source dm_production/anaspec_zhou)]
 LLIST = CLIST - WLIST
 
 WINC, LINC = FLIST, LLIST + HLIST
@@ -53,7 +54,7 @@ COLLEC = STATIC ? 'ar crs' : "#{CC} #{CFLAG} -shared -fPIC -o"
 DEPNAME = 'DEPENDENCY'
 def gendepend(srccls)
   puts "Generating depends for #{srccls}"
-  res = `#{CC} #{CFLAG} #{INC} #{DEPEND.inc_to_s} -E -MM -fPIC #{name(srccls, :cc)}`
+  res = `#{CC} #{CFLAG} #{INC} #{WITH_GALP ? DEPEND.inc_to_s : ''} -E -MM -fPIC #{name(srccls, :cc)}`
        .split(' ').select { |x| x != '\\' }
        #.map { |x| x.sub(/[.]h$/, '.h.gch') } # for precompiling
   [name(srccls), res[1..-1]]
@@ -107,8 +108,9 @@ def compile(cls, t, create = nil)
   datdir = %Q(-D DATDIR=\\"#{PREFIX}/lib/#{cls}_data\\")
   dat = DATALIST.include?(cls) ? datdir : ''
 
-  cmd = "#{CC} #{CFLAG} #{dbg} #{dat} -D GALP_#{GALPVERSION} #{getinc(cls)} " \
-    "#{DEPEND.inc_to_s} #{create} -fPIC #{t.source} -o #{t.name}"
+  cmd = [CC, CFLAG, dbg, dat, WITH_GALP ? "-D GALP_#{GALPVERSION}" : '',
+         getinc(cls), WITH_GALP ? DEPEND.inc_to_s : '',
+         create, '-fPIC', t.source, '-o', t.name].join(' ')
 
   sys(cmd, "Compiling #{t.name}")
 end
@@ -116,6 +118,7 @@ end
 CLIST.each do |cls|
   break unless DEPENDS
   file name(cls) => DEPENDS[name(cls)] do |t|
+    raise 'libwork depend on galpwrapper'.bright if !WITH_GALP && OBJS[:work].include?(t.name)
     compile(cls, t, '-c')
   end
 end
