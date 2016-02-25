@@ -4,6 +4,8 @@ require 'rubygems'
 require 'json'
 require 'rainbow/ext/string'
 
+load '~/.galprop/galpdepend/galpdepend.rb' if File.exist?(GALPWRAPPER_DIR)
+
 def name(x, post = :o)
   "#{x}/#{File.basename(x)}.#{post}"
 end
@@ -117,12 +119,3 @@ CLIST.each do |cls|
     compile(cls, t, '-c')
   end
 end
-
-# For precompiling, it is banned as seems useless
-#FLIST.each do |cls|
-#  file name(cls, 'h.gch') => name(cls, :h) do |t|
-#    compile(cls, t)
-#  end
-#end
-
-import('~/.scripts/rakeutils/galplib.rake')
