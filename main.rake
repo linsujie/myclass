@@ -25,7 +25,7 @@ def sys(str, info)
   system(str)
 end
 
-DATALIST = %w(dm_production/anaspec dm_production/anaspec_pppc dm_production/anaspec_zhou load_dat)
+DATALIST = %w(dm_production/anaspec dm_production/anaspec_pppc dm_production/anaspec_zhou load_dat pp_antiproton)
 
 FLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :h)) } - EXCLUDE
 CLIST = FileList['*', '*/*'].select { |x| File.exist?(name(x, :cc)) } - EXCLUDE
