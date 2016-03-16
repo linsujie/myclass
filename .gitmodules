@@ -1,6 +1,3 @@
-[submodule "utils"]
-	path = utils
-	url = https://github.com/linsujie/utils.git
 [submodule "dm_production"]
 	path = dm_production
 	url = https://github.com/linsujie/dm_production.git
@@ -10,3 +7,6 @@
 [submodule "pp_antiproton"]
 	path = pp_antiproton
 	url = bitssh:linsujie/pp_antiproton.git
+[submodule "utils"]
+	path = utils
+	url = https://github.com/linsujie/utils.git
