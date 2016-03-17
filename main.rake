@@ -94,12 +94,24 @@ task :install do
     [[Dir.glob('*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
     [[Dir.glob('*/*/enumdef/*def').join(' '), "#{PREFIX}/include/enumdef"]] + \
     CLOBBER.map { |x| File.exist?(x) && [x, "#{PREFIX}/lib"] } + \
-    DATALIST.map { |c| ["#{c}/#{File.basename(c)}_data/*", "#{PREFIX}/lib/#{c}_data"] }
+    DATALIST.map { |c| get_data_pair(c) }.flatten(1)
 
   ins.select { |x| x }.each do |o, t|
     FileUtils.mkdir_p(t)
     sys("install -D #{o} #{t}", "Installing:".bright + " #{o}")
   end
+end
+
+def get_data_pair(c)
+  origindir = "#{c}/#{File.basename(c)}_data"
+  targetdir = "#{PREFIX}/lib/#{c}_data"
+
+  subs = Dir.foreach(origindir).select { |f| f != '..' && f != '.' }
+  return [] if subs.empty?
+
+  return [["#{origindir}/*", targetdir]] unless File.directory?("#{origindir}/#{subs[0]}")
+
+  subs.map { |s| ["#{origindir}/#{s}/*", "#{targetdir}/#{s}"] }
 end
 
 def compile(cls, t, create = nil)
