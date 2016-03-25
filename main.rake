@@ -47,7 +47,8 @@ end
 def compile(t)
   taskname = File.basename(t.name).sub('.o', '')
 
-  sys([CC, CFLAG, WITH_GALP ? "-D GALP_#{GALPVERSION}" : '',
+  sys([CC, DEPENDENCY.cflag,
+       WITH_GALP ? "-D GALP_#{GALPVERSION}" : '',
        STATIC ? nil : '-shared -fPIC',
        DLIST.include?(taskname) ? DEBUG : '',
        CLASSES.datdir(PREFIX, taskname.to_sym),
