@@ -47,7 +47,7 @@ end
 def compile(t)
   taskname = File.basename(t.name).sub('.o', '')
 
-  sys([CC, CFLAG, "-D GALP_#{GALPVERSION}",
+  sys([CC, CFLAG, WITH_GALP ? "-D GALP_#{GALPVERSION}" : '',
        STATIC ? nil : '-shared -fPIC',
        DLIST.include?(taskname) ? DEBUG : '',
        CLASSES.datdir(PREFIX, taskname.to_sym),
@@ -67,8 +67,7 @@ CLASSES.class.each do |cls, paths|
   end
 
   file paths[:o] => DEPENDENCY.list(paths[:o]) do |t|
-    raise 'libwork depend on galpwrapper'.bright if !WITH_GALP && OBJS[:work].include?(t.name)
-
+    raise 'libwork depend on galpwrapper'.bright if !WITH_GALP && LIST[:work].include?(cls)
     next if compile(t)
     puts "The exist dependency incorrect, now try to regenerate it".color(:blue)
     DEPENDENCY.gen_depend(t.name)
