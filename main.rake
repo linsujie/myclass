@@ -21,7 +21,8 @@ end
 CLASSES = ClassesCollector.new('.')
 CLASSES.exclude(EXCLUDE)
 
-DEPENDENCY = DependCollector.new('DEPENDENCY', cc: CC, cflag: CFLAG,
+DEPENDENCY = DependCollector.new('DEPENDENCY', cc: CC,
+                                 cflag: "#{CFLAG} #{WITH_GALP ? "-D GALP_#{GALPVERSION}" : ''}",
                                  inc: [CLASSES.incs, WITH_GALP ? DEPEND.inc_to_s : ''].join(' '))
 
 LIST = { work: %w(chi2prop mcparas propagator create_source anaspec_zhou).map(&:to_sym) }
@@ -48,7 +49,6 @@ def compile(t)
   taskname = File.basename(t.name).sub('.o', '')
 
   sys([CC, DEPENDENCY.cflag,
-       WITH_GALP ? "-D GALP_#{GALPVERSION}" : '',
        STATIC ? nil : '-shared -fPIC',
        DLIST.include?(taskname) ? DEBUG : '',
        CLASSES.datdir(PREFIX, taskname.to_sym),
