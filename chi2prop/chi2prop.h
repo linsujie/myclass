@@ -2,25 +2,25 @@
 #define _CHI2PROP_H
 #include<sstream>
 
-#ifdef GALP_V55
+//#ifdef GALP_V55
 
 #include "GalpropWrapper.h"
 
-#else
-
-#include"ErrorLogger.h"
-#include "Configure.h"
-#include "Galdef.h"
-#include "Spectrum.h"
-#include "Distribution.h"
-#include "Particle.h"
-#include "Galaxy.h"
-#include "Galprop.h" // AWS20050816
-#include"galprop_internal.h"
-
-#include"config.h"
-
-#endif
+//#else
+//
+//#include"ErrorLogger.h"
+//#include "Configure.h"
+//#include "Galdef.h"
+//#include "Spectrum.h"
+//#include "Distribution.h"
+//#include "Particle.h"
+//#include "Galaxy.h"
+//#include "Galprop.h" // AWS20050816
+//#include"galprop_internal.h"
+//
+//#include"config.h"
+//
+//#endif
 
 #include"spectrum.h"
 #include"load_dat.h"
@@ -54,7 +54,7 @@ private:
   double calc_chi2(load_dat::choice chc, const spectrum &spec, const vector <int> &exp_subgrp, double phi, const string &outpath) const;
 
 #ifndef GALP_V55
-  int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
+  //int run(double *p, int iter, model_kind mod, bool pflag, const char *defname);
 #endif
 
 public:
@@ -62,16 +62,16 @@ public:
   enum solar_type {spherical, force_field};
   solar_type stype;
   double cposi, cpbar;
-#ifdef GALP_V55
   GalpropWrapper *galpropmc;
 
+//#ifdef GALP_V55
   chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath = "../../FITS", const string &outputPrefix = "galp");
-#else
-  Galprop *galpropmc;
+//#else
+  //Galprop *galpropmc;
 
-  chi2prop();
-  int setpara(double *p, model_kind mod);
-#endif
+  //chi2prop();
+  //int setpara(double *p, model_kind mod);
+//#endif
   int setphi(const vector <double> &phi_) throw();
   int setkeep(const vector <load_dat::fluxes> &keep_) throw();
 
@@ -86,10 +86,10 @@ public:
   int start(int iter) throw();
 
 #ifndef GALP_V55
-  int run();
-  int run(const char *defname);
-  int run(double *p, int iter, model_kind mod);
-  int run(double *p, int iter, model_kind mod, bool pflag);
+  //int run();
+  //int run(const char *defname);
+  //int run(double *p, int iter, model_kind mod);
+  //int run(double *p, int iter, model_kind mod, bool pflag);
 #endif
 };
 #endif // for #ifndef _CHI2PROP_H

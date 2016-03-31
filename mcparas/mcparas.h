@@ -1,6 +1,16 @@
 #ifndef _MCPARAS_H
 #define _MCPARAS_H
+
+#ifdef GALP_V55
+
+#include "GalpropWrapper.h"
+
+#else
+
 #include"chi2prop.h"
+
+#endif
+
 #include"anaspec.h"
 #include<vector>
 #include<string>

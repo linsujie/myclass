@@ -64,7 +64,12 @@ double mcparas::getp() throw() {
 }
 
 int mcparas::print() const throw() {
-  Galdef::specProperties &he4prop = galdef->iso_inj_spectra[std::pair<int,int> (2, 4)];
+#ifdef GALP_V55
+  Galdef::specProperties *he4prop = 0;
+  auto iter = galdef->iso_inj_spectra.find(std::pair<int,int> (2, 4));
+  if (iter != galdef->iso_inj_spectra.end()) he4prop = &(iter -> second);
+#endif
+
   cout << "D0_xx :\t"               << galdef->D0_xx                 << endl
     << "eta :\t"                    << galdef->eta                   << endl
     << "D_rigid_br :\t"             << galdef->D_rigid_br            << endl
@@ -82,13 +87,21 @@ int mcparas::print() const throw() {
     << "nuc_rigid_br :\t"           << galdef->nuc_rigid_br          << endl
     << "nuc_g_2 :\t"                << galdef->nuc_g_2               << endl
     << "proton_norm_flux :\t"       << galdef->proton_norm_flux      << endl
-    << endl
-    << "helium.g_0 :\t"             << he4prop.g_0                   << endl
-    << "helium.rigid_br0 :\t"       << he4prop.rigid_br0             << endl
-    << "helium.g_1 :\t"             << he4prop.g_1                   << endl
-    << "helium.rigid_br :\t"        << he4prop.rigid_br              << endl
-    << "helium.g_2 :\t"             << he4prop.g_2                   << endl
-    << endl
+    << endl;
+
+#ifdef GALP_V55
+  if (he4prop) {
+    cout
+      << "helium.g_0 :\t"             << he4prop->g_0                   << endl
+      << "helium.rigid_br0 :\t"       << he4prop->rigid_br0             << endl
+      << "helium.g_1 :\t"             << he4prop->g_1                   << endl
+      << "helium.rigid_br :\t"        << he4prop->rigid_br              << endl
+      << "helium.g_2 :\t"             << he4prop->g_2                   << endl
+      << endl;
+  }
+#endif
+
+  cout
     << "isotopic_abundance[1][1] :\t" << galdef->isotopic_abundance[1][1]  << endl
     << "isotopic_abundance[2][3] :\t" << galdef->isotopic_abundance[2][3]  << endl
     << "isotopic_abundance[2][4] :\t" << galdef->isotopic_abundance[2][4]  << endl
@@ -289,7 +302,6 @@ int mcparas::set_iso_injection(Galdef::specProperties &prop, inject_mode &bks, c
   }
   return 0;
 }
-#endif
 
 int mcparas::helium_set(inject_mode bks) throw() {
   const double *point = p + p_index;
@@ -301,6 +313,7 @@ int mcparas::helium_set(inject_mode bks) throw() {
   set_iso_injection(he4prop, bks, point);
   return 0;
 }
+#endif
 
 int mcparas::proton_set(inject_mode bks) throw() {
   const double *point = p + p_index;

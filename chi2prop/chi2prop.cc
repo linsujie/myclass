@@ -17,22 +17,22 @@ const vector <const char *> chi2prop::contriname = {"electrons", "secondary_elec
   vec.resize(load_dat::fluxnum);\
   for(int i = 0; i < load_dat::fluxnum; i++) vec[i].resize(load_dat::iso_vectors[i].size() - 1);
 
-#ifdef GALP_V55
+//#ifdef GALP_V55
 chi2prop::chi2prop(const string &galdefPath, const string &fitsPath, const string &outputPath, const string &outputPrefix):
-#else
-chi2prop::chi2prop():
-#endif
+//#else
+//chi2prop::chi2prop():
+//#endif
   outdate(load_dat::fluxnum, true), outdate_solar(load_dat::fluxnum, false), keep(0), stype(force_field),
-#ifdef GALP_V55
+//#ifdef GALP_V55
   galpropmc(new GalpropWrapper)
-#else
-  galpropmc(new Galprop)
-#endif
+//#else
+//  galpropmc(new Galprop)
+//#endif
 {
 
-#ifdef GALP_V55
+//#ifdef GALP_V55
     galpropmc->configure.init(galdefPath, fitsPath, outputPath, outputPrefix);
-#endif
+//#endif
 
     SIZING(Fluxes);
     SIZING(Fluxes_as);
@@ -289,33 +289,33 @@ double chi2prop::chi2(const vector <vector <int> > &exn, load_dat::choice chc, b
 }
 
 #ifndef GALP_V55
-int chi2prop::run(double *p, int iter, model_kind mod, bool pflag, const char *defname) {
-  printDebugMsg("Routine", ">> run:\titer %d\tpflag %d\tGALDEF %s\n", iter, pflag, defname);
-  std::fill(outdate.begin(), outdate.end(), true);
-  if(0 != iter)
-    for(unsigned i = 0; i < keep.size(); i++) outdate[keep[i]] = false;
+//int chi2prop::run(double *p, int iter, model_kind mod, bool pflag, const char *defname) {
+//  printDebugMsg("Routine", ">> run:\titer %d\tpflag %d\tGALDEF %s\n", iter, pflag, defname);
+//  std::fill(outdate.begin(), outdate.end(), true);
+//  if(0 != iter)
+//    for(unsigned i = 0; i < keep.size(); i++) outdate[keep[i]] = false;
+//
+//  return galpropmc->run(p, iter, mod, pflag, defname);
+//  printDebugMsg("Routine", "<< run");
+//}
+//
+//int chi2prop::run(double *p, int iter, model_kind mod, bool pflag) {
+//  return run(p, iter, mod, pflag, "default");
+//}
+//
+//int chi2prop::run(double *p, int iter, model_kind mod) {
+//  return run(p, iter, mod, false, "default");
+//}
 
-  return galpropmc->run(p, iter, mod, pflag, defname);
-  printDebugMsg("Routine", "<< run");
-}
-
-int chi2prop::run(double *p, int iter, model_kind mod, bool pflag) {
-  return run(p, iter, mod, pflag, "default");
-}
-
-int chi2prop::run(double *p, int iter, model_kind mod) {
-  return run(p, iter, mod, false, "default");
-}
-
-int chi2prop::run(const char *defname) {
-  double *p = 0;
-  return run(p, 0, DEFAULT, true, defname);
-}
-
-int chi2prop::run() {
-  double *p= 0;
-  return run(p, 0, DEFAULT, true, "default");
-}
+//int chi2prop::run(const char *defname) {
+//  double *p = 0;
+//  return run(p, 0, DEFAULT, true, defname);
+//}
+//
+//int chi2prop::run() {
+//  double *p= 0;
+//  return run(p, 0, DEFAULT, true, "default");
+//}
 #endif
 
 int chi2prop::start(int iter) throw() {
@@ -330,9 +330,9 @@ int chi2prop::start(int iter) throw() {
 }
 
 #ifndef GALP_V55
-int chi2prop::setpara(double *p, model_kind mod) {
-  return galpropmc->set_params(p, mod);
-}
+//int chi2prop::setpara(double *p, model_kind mod) {
+//  return galpropmc->set_params(p, mod);
+//}
 #endif
 
 int chi2prop::err_info(errtype &err) throw() {

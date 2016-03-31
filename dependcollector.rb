@@ -17,6 +17,7 @@ class DependCollector
 
     @opts[:cflag] += ' ' + @opts[:inc].select { |x| x[0] == '-' }.join(' ')
     @opts[:inc].reject! { |x| x[0] == '-' }
+    @opts[:inc].map! { |d| File.expand_path(d) }
 
     ObjectSpace.define_finalizer(self,  proc { store(file) })
 
@@ -57,7 +58,7 @@ class DependCollector
     return if EXCLUDE_EXT.include?(extname)
 
     return true unless ['.h', '.hpp'].include?(extname)
-    inside_inc(File.dirname(file))
+    inside_inc(File.expand_path(File.dirname(file)))
   end
 
   def reject_i(dir)
