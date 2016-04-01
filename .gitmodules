@@ -6,7 +6,7 @@
 	url = https://github.com/linsujie/interpolator.git
 [submodule "pp_antiproton"]
 	path = pp_antiproton
-	url = bitssh:linsujie/pp_antiproton.git
+	url = bitssh:galpwrapper_bi/pp_antiproton.git
 [submodule "utils"]
 	path = utils
 	url = https://github.com/linsujie/utils.git
