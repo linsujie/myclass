@@ -7,7 +7,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-const string load_dat::data_name[11] = {"BC", "Be", "Posifrac", "pbarp", "Proton", "Helium", "Carbon", "Oxygen", "Electron", "TotEP", "Positron"};
+const string load_dat::data_name[12] = {"BC", "Be", "Posifrac", "pbarp", "Proton", "Helium", "Carbon", "Oxygen", "Electron", "TotEP", "Positron", "Pbar"};
 
 // recording the Z and A of all the isotopes to be calculated.
 const vector <vector <int> > load_dat::iso_vectors = {{5, 10, 11},
@@ -59,7 +59,8 @@ const vector <vector <load_dat::fluxes> > load_dat::sub_table = {{load_dat::bele
       elename = path + "/electron.dat",
       posiname = path + "/posifrac.dat",
       totepname = path + "/totep.dat",
-      positronname = path + "/positron.dat";
+      positronname = path + "/positron.dat",
+      pbarname = path + "/pbar.dat";
 load_dat::load_dat() : datas({chisq(bcname),
                               chisq(bename),
                               chisq(posiname),
@@ -70,7 +71,8 @@ load_dat::load_dat() : datas({chisq(bcname),
                               chisq(oxyname),
                               chisq(elename, 3.0),
                               chisq(totepname, 3.0),
-                              chisq(positronname, 3.0)}) { }
+                              chisq(positronname, 3.0),
+                              chisq(pbarname) }) { }
 
 int load_dat::print() const {
   for(unsigned i = 0; i < datas.size(); i++) {
@@ -114,6 +116,9 @@ const char* enum2str(load_dat::choice chc, int number) {
   case load_dat::positron:
     return enum2str(positexpname(number));
 
+  case load_dat::pbar:
+    return enum2str(pbarexpname(number));
+
   default:
     cout << "Error::load_dat::enum2str::could not find the enum names for this choice: " << chc << endl;
     exit(0);
@@ -124,6 +129,10 @@ const char* enum2str(load_dat::choice chc, int number) {
 #define X(a) #a,
 NAME(ppexpname) = {
 #include "enumdef/ppexpname.def"
+};
+
+NAME(pbarexpname) = {
+#include "enumdef/pbarexpname.def"
 };
 
 NAME(carbexpname) = {
@@ -165,6 +174,6 @@ NAME(beexpname) = {
 #undef NAME
 
 #define X(TYPE) ENUMANDSTR(TYPE, TYPE##_name)
-X(ppexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
+X(ppexpname) X(pbarexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
 X(positexpname) X(protexpname) X(heliumexpname) X(bcexpname) X(beexpname)
 #undef X

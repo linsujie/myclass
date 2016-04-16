@@ -15,9 +15,9 @@ public:
   static const std::vector <std::vector <int> > iso_vectors;
   static const std::vector <std::string> iso_names;
 
-  enum choice {bcratio, beratio, posifrac, pbarp, proton, helium, carbon, oxygen, electron, totep, positron};
+  enum choice {bcratio, beratio, posifrac, pbarp, proton, helium, carbon, oxygen, electron, totep, positron, pbar};
   //ratio should be putted before fluxes.
-  static const std::string data_name[11];
+  static const std::string data_name[12];
 
   static const std::vector <std::vector <fluxes> > sub_table, deno_table;
 
@@ -31,6 +31,10 @@ const char* enum2str(load_dat::choice chc, int number);
 #define X(a) a,
 enum ppexpname {
 #include "enumdef/ppexpname.def"
+};
+
+enum pbarexpname {
+#include "enumdef/pbarexpname.def"
 };
 
 enum carbexpname {
@@ -71,7 +75,7 @@ enum beexpname {
 #undef X
 
 #define X(TYPE) ENUMDECLEAR(TYPE)
-X(ppexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
+X(ppexpname) X(pbarexpname) X(carbexpname) X(eleexpname) X(totexpname) X(posifexpname)
 X(positexpname) X(protexpname) X(heliumexpname) X(bcexpname) X(beexpname)
 #undef X
 
