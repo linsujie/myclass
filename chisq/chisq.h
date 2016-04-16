@@ -6,6 +6,7 @@
   The third column is err for the second column.
  *********************************************************************/
 #include<sstream>
+#include "pArray.h"
 #include"spectrum.h"
 class chisq {
 protected:
@@ -29,11 +30,23 @@ public:
 
   int extra_sigma(const spectrum &sigma_ = zerospec);
 
-  double chi2(const spectrum &phi, bool pflag = false, const std::string &filename = "null",
-              std::ios_base::openmode outmode = std::ios_base::out) const;
+  double chi2(const pArray &E_, const pArray &F_, bool pflag = false,
+              const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
+  double chi2(const std::vector <int> &setnums, const pArray &E_, const pArray &F_, bool pflag = false,
+              const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
+  double chi2(int setnum, const pArray &E_, const pArray &F_, bool pflag = false,
+              const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
+
+  double chi2(const spectrum &phi, bool pflag = false,
+              const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
   double chi2(const std::vector <int> &setnums, const spectrum &phi, bool pflag = false,
               const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
   double chi2(int setnum, const spectrum &phi, bool pflag = false,
+              const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
+
+private:
+
+  double chi2(int setnum, const double *E_, const double *F_, int nsize, bool pflag = false,
               const std::string &filename = "null", std::ios_base::openmode mode = std::ios_base::out) const;
 };
 #endif // for #ifndef _CHISQ_H
