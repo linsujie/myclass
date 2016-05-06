@@ -119,6 +119,23 @@ int chisq::printdat(int setnum, const string &filename) const {
   return dealoutput(filename, os, ios_base::app);
 }
 
+#ifndef NO_ROOT
+TGraphErrors *chisq::GetTGraphErrors(int setnum, double index) const {
+  double Ftmp[F[setnum].size()], sigmatmp[total_sigma[setnum].size()];
+
+  for (unsigned i = 0; i < F[setnum].size(); i++) {
+    Ftmp[i] = F[setnum][i] * pow(E[setnum][i], index);
+    sigmatmp[i] = total_sigma[setnum][i] * pow(E[setnum][i], index);
+  }
+
+  TGraphErrors *result = new TGraphErrors(E[setnum].size(), &(E[setnum][0]), Ftmp, 0, sigmatmp);
+  result->SetName(dataname[setnum].c_str());
+  result->SetTitle(dataname[setnum].c_str());
+
+  return result;
+}
+#endif
+
 int chisq::printsizes() const {
   for(unsigned i = 0; i < dataname.size(); i++)
     cout << dataname[i] << " with " << E[i].size() << " points" << endl;

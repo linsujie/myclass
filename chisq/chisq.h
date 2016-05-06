@@ -6,6 +6,11 @@
   The third column is err for the second column.
  *********************************************************************/
 #include<sstream>
+
+#ifndef NO_ROOT
+#include<TGraphErrors.h>
+#endif
+
 #include "pArray.h"
 #include"spectrum.h"
 class chisq {
@@ -24,9 +29,13 @@ public:
 
   int printsizes() const;
 
-  int printdat(const std::string &filename = "null") const ;
-  int printdat(const std::vector <int> &setnums, const std::string &filename = "null") const ;
-  int printdat(int setnum, const std::string &filename = "null") const ;
+  int printdat(const std::string &filename = "null") const;
+  int printdat(const std::vector <int> &setnums, const std::string &filename = "null") const;
+  int printdat(int setnum, const std::string &filename = "null") const;
+
+#ifndef NO_ROOT
+  TGraphErrors *GetTGraphErrors(int setnum, double index = 0) const; // A TGraphErrors would be newed by this function, please delete it yourself
+#endif
 
   int extra_sigma(const spectrum &sigma_ = zerospec);
 

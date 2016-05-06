@@ -11,4 +11,6 @@ VERBOSE = :detail # :detail or :brief
 CC = 'ccache g++'
 CFLAG = '-std=c++0x -Wall -g -O2'
 
+FLAGS = %w(NO_ROOT)
+
 import("main.rake")

@@ -52,6 +52,7 @@ def compile(t)
   sys([CC, DEPENDENCY.cflag,
        STATIC ? nil : '-shared -fPIC',
        DLIST.include?(taskname) ? DEBUG : '',
+       FLAGS.map { |f| "-D #{f}" }.join(' '),
        CLASSES.datdir(PREFIX, taskname.to_sym),
        '-c -o', t.name,
        DEPENDENCY.list_inc(t.name),
