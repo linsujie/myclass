@@ -27,8 +27,8 @@ class DependCollector
 
   def list_inc(obj)
     list(obj).select { |x| File.extname(x) == '.h' }
-      .map { |f| File.dirname(f) }.uniq.select { |x| inside_inc(x) }
-      .map { |f| "-I #{f}" }.join(' ')
+      .map { |f| File.dirname(f) }.uniq.map { |x| match_include(x) }
+      .compact.flatten.uniq.map { |f| "-I #{f}" }.join(' ')
   end
 
   def cflag
@@ -58,15 +58,22 @@ class DependCollector
     return if EXCLUDE_EXT.include?(extname)
 
     return true unless ['.h', '.hpp'].include?(extname)
-    inside_inc(File.expand_path(File.dirname(file)))
+    match_include(File.expand_path(File.dirname(file)))
   end
 
   def reject_i(dir)
     dir.sub(/^-I/, '')
   end
 
-  def inside_inc(dir)
-    @opts[:inc].include?(dir)
+  # These system include DIR should be excluded when compiling, or some trouble would be caused
+  SYSTEM_DIR = %w(/usr/include/sys /usr/include/linux /usr/include/bits /usr/include/asm /usr/include/asm-generic /usr/include/gnu)
+  def get_match(fulldir, parentdir)
+    return nil if SYSTEM_DIR.include?(fulldir)
+    fulldir.start_with?(parentdir) ? [fulldir, parentdir] : nil
+  end
+
+  def match_include(dir)
+    @opts[:inc].reduce(nil) { |a, e| a || get_match(dir, e) }
   end
 
   def store(file)
