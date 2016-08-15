@@ -22,7 +22,8 @@ CLASSES = ClassesCollector.new('.')
 CLASSES.exclude(EXCLUDE)
 
 DEPENDENCY = DependCollector.new('DEPENDENCY', cc: CC,
-                                 cflag: "#{CFLAG} #{WITH_GALP ? "-D GALP_#{GALPVERSION}" : ''}",
+                                 cflag: ["#{CFLAG} #{WITH_GALP ? "-D GALP_#{GALPVERSION}" : ''}",
+                                         FLAGS.map { |f| "-D #{f}" }].join(' '),
                                  inc: [CLASSES.incs, WITH_GALP ? DEPEND.inc_to_s : ''].join(' '))
 
 WLIST = %w(chi2prop mcparas anaspec_zhou)
