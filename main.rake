@@ -22,10 +22,11 @@ CLASSES = ClassesCollector.new('.')
 CLASSES.exclude(EXCLUDE)
 
 DEPENDENCY = DependCollector.new('DEPENDENCY', cc: CC,
-                                 cflag: "#{CFLAG} #{WITH_GALP ? "-D GALP_#{GALPVERSION}" : ''}",
+                                 cflag: ["#{CFLAG} #{WITH_GALP ? "-D GALP_#{GALPVERSION}" : ''}",
+                                         FLAGS.map { |f| "-D #{f}" }].join(' '),
                                  inc: [CLASSES.incs, WITH_GALP ? DEPEND.inc_to_s : ''].join(' '))
 
-WLIST = %w(chi2prop mcparas propagator create_source anaspec_zhou)
+WLIST = %w(chi2prop mcparas anaspec_zhou)
 LIST = { work: WLIST.reject { |x| EXCLUDE.include?(x) }.map(&:to_sym) }
 LIST[:lin] = CLASSES.class.each_key.to_a - LIST[:work]
 
