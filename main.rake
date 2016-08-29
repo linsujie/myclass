@@ -61,6 +61,8 @@ def compile(t)
 end
 
 CLASSES.class.each do |cls, paths|
+  #p cls
+  #next unless cls == :Interp2D
   next unless paths[:o]
 
   begin

@@ -66,9 +66,9 @@ class DependCollector
   end
 
   # These system include DIR should be excluded when compiling, or some trouble would be caused
-  SYSTEM_DIR = %w(/usr/include/sys /usr/include/linux /usr/include/bits /usr/include/asm /usr/include/asm-generic /usr/include/gnu)
+  SYSTEM_DIR = %w(/usr/include/sys /usr/include/linux /usr/include/bits /usr/include/asm /usr/include/asm-generic /usr/include/gnu /usr/include/boost)
   def get_match(fulldir, parentdir)
-    return nil if SYSTEM_DIR.include?(fulldir)
+    return nil if SYSTEM_DIR.reduce(nil) { |a, e| a || fulldir.start_with?(e) }
     fulldir.start_with?(parentdir) ? [fulldir, parentdir] : nil
   end
 
