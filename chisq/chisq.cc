@@ -134,6 +134,35 @@ TGraphErrors *chisq::GetTGraphErrors(int setnum, double index) const {
 
   return result;
 }
+
+chisq::chisq(TGraphErrors *gr, double Eindx) {
+  init(gr, Eindx);
+  extra_sigma();
+}
+bool chisq::init(TGraphErrors *gr, double Eindx) {
+  const string annotate = "#";
+  int iset = addexperiment(annotate + gr->GetTitle());
+
+  E[iset].resize(gr->GetN());
+  F[iset].resize(gr->GetN());
+  sigma[iset].resize(gr->GetN());
+  for (int i = 0; i < gr->GetN(); i++) {
+    E[iset][i] = gr->GetX()[i];
+    F[iset][i] = gr->GetY()[i] / pow(E[iset][i], Eindx);
+    sigma[iset][i] = gr->GetEY()[i] / pow(E[iset][i], Eindx);
+  }
+
+  return true;
+}
+
+chisq::chisq(const vector <TGraphErrors *> &grs, double Eindx) {
+  init(grs, Eindx);
+  extra_sigma();
+}
+bool chisq::init(const vector <TGraphErrors *> &grs, double Eindx) {
+  for (unsigned iset = 0; iset < grs.size(); iset++) init(grs[iset], Eindx);
+  return false;
+}
 #endif
 
 int chisq::printsizes() const {

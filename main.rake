@@ -6,7 +6,7 @@ require 'rainbow/ext/string'
 require_relative 'classescollector'
 require_relative 'dependcollector'
 
-WITH_GALP = File.exist?(GALPWRAPPER_DIR)
+WITH_GALP = GALPWRAPPER_DIR && File.exist?(GALPWRAPPER_DIR)
 load '~/.galprop/galpdepend/galpdepend.rb' if WITH_GALP
 
 def sys(str, info)

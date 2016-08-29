@@ -20,6 +20,10 @@ protected:
   std::vector < std::vector<double> > E, F, sigma, total_sigma;
   std::vector <std::string> dataname;
   int init(const std::string &filename, double Eindx);
+#ifndef NO_ROOT
+  bool init(TGraphErrors *gr, double Eindx = 0);
+  bool init(const std::vector <TGraphErrors *> &grs, double Eindx = 0);
+#endif
   int addexperiment(const std::string &line);
 
   int dealoutput(const std::string &filename, const std::ostringstream &os, std::ios_base::openmode outmode) const;
@@ -35,6 +39,8 @@ public:
 
 #ifndef NO_ROOT
   TGraphErrors *GetTGraphErrors(int setnum, double index = 0) const; // A TGraphErrors would be newed by this function, please delete it yourself
+  chisq(TGraphErrors * gr, double Eindx = 0);
+  chisq(const std::vector <TGraphErrors *> &grs, double Eindx = 0);
 #endif
 
   int extra_sigma(const spectrum &sigma_ = zerospec);

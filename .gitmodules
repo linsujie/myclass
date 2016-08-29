@@ -10,3 +10,6 @@
 [submodule "utils"]
 	path = utils
 	url = https://github.com/galpwrapper/utils.git
+[submodule "antinucleus"]
+	path = antinucleus
+	url = bitssh:galpwrapper_bi/antinucleus.git
