@@ -65,14 +65,14 @@ class DependCollector
     dir.sub(/^-I/, '')
   end
 
-  # These system include DIR should be excluded when compiling, or some trouble would be caused
-  SYSTEM_DIR = %w(/usr/include/sys /usr/include/linux /usr/include/bits /usr/include/asm /usr/include/asm-generic /usr/include/gnu)
   def get_match(fulldir, parentdir)
-    return nil if SYSTEM_DIR.include?(fulldir)
     fulldir.start_with?(parentdir) ? [fulldir, parentdir] : nil
   end
 
+  # These system include DIR should be excluded when compiling, or some trouble would be caused
+  SYSTEM_DIR = %w(/usr/include/sys /usr/include/linux /usr/include/bits /usr/include/boost /usr/include/asm /usr/include/asm-generic /usr/include/gnu)
   def match_include(dir)
+    return nil if SYSTEM_DIR.reduce(nil) { |a, e| a || dir.start_with?(e) }
     @opts[:inc].reduce(nil) { |a, e| a || get_match(dir, e) }
   end
 
