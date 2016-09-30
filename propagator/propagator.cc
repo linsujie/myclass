@@ -98,6 +98,7 @@ int Green::create_tab(double precision) {
   double range[4] = {1e-200, 0.1 * K0, 0.97 * L, 4 * pow(5e5, delta) * 2e4 * K0};
   cout << "range is " << range[0] << " " << range[1] << " " << range[2] << " " << range[3] << endl;
   intp.lncreating(&g1df, range, precision);
+  intp.del_map();
   cout << "table created" << endl;
   return 0;
 }
