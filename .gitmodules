@@ -13,3 +13,6 @@
 [submodule "antinucleus"]
 	path = antinucleus
 	url = bitssh:galpwrapper_bi/antinucleus.git
+[submodule "load_dat"]
+	path = load_dat
+	url = bitssh:publiclin/load_dat.git
