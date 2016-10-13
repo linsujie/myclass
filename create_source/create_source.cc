@@ -40,8 +40,8 @@ inline double source::Qr(double r, double r_sun, double alpha, double beta) {
 double source::get_r() {
   long double r_sun = 8.33,
               r_max = 15,
-              alpha = 1.25,
-              beta = 3.56;
+              alpha = 2.35,
+              beta = 5.83; // The alpha: 2.35  beta: 5.83 comes from Lorimer2003 astro-ph/0308501
   long double ran_num;
   long double r_peak = (alpha + 1) / beta * r_sun,
               Q_max = Qr(r_peak, r_sun, alpha, beta);
