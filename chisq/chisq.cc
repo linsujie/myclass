@@ -1,14 +1,14 @@
-#include<cmath>
-#include<cstdlib>
-#include<iostream>
-#include<fstream>
-#include<sstream>
-#include<cstring>
-#include<vector>
-#include<iomanip>
-#include"interp.h"
-#include"chisq.h"
-#include"oformat.h"
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <vector>
+#include <iomanip>
+#include "interp.h"
+#include "chisq.h"
+#include "oformat.h"
 
 using std::ifstream;
 using std::ofstream;
@@ -25,16 +25,18 @@ using std::setprecision;
 
 const char chisq::annota[2] = "#";
 
-const vector <double> zerox = { 1, 2 },
-      zeroy = { 0, 0 };
+const vector<double> zerox = { 1, 2 },
+                     zeroy = { 0, 0 };
 const spectrum chisq::zerospec(zerox, zeroy);
 
-chisq::chisq(const string &filename, double Eindx) {
+chisq::chisq(const string& filename, double Eindx)
+{
   init(filename, Eindx);
   extra_sigma();
 }
 
-chisq::chisq(const chisq &another) {
+chisq::chisq(const chisq& another)
+{
   E = another.E;
   F = another.F;
   sigma = another.sigma;
@@ -42,8 +44,9 @@ chisq::chisq(const chisq &another) {
   dataname = another.dataname;
 }
 
-const vector <double> emptyvec;
-int chisq::addexperiment(const string &line) {
+const vector<double> emptyvec;
+int chisq::addexperiment(const string& line)
+{
   E.push_back(emptyvec);
   F.push_back(emptyvec);
   sigma.push_back(emptyvec);
@@ -52,7 +55,8 @@ int chisq::addexperiment(const string &line) {
   return int(E.size()) - 1;
 }
 
-int chisq::init(const string &filename, double Eindx) {
+int chisq::init(const string& filename, double Eindx)
+{
   int iset = -1;
   double Etmp, Ftmp, stmp;
   string line;
@@ -60,12 +64,14 @@ int chisq::init(const string &filename, double Eindx) {
   ifstream datfile(filename.c_str());
 
   for (int nline = 1; getline(datfile, line); nline++) {
-    if (line.size() == 0) continue;
+    if (line.size() == 0)
+      continue;
 
     else if (line.at(0) == annota[0]) {
       iset = addexperiment(line);
     } else {
-      if (-1 == iset) iset = addexperiment(annota);
+      if (-1 == iset)
+        iset = addexperiment(annota);
 
       istringstream is(line);
 
@@ -86,20 +92,27 @@ int chisq::init(const string &filename, double Eindx) {
       }
     }
   }
-  if(dataname.size() == 0) cout << "The datafile " << filename << " is empty." << endl;
+  if (dataname.size() == 0)
+    cout << "The datafile " << filename << " is empty." << endl;
 
   return 0;
 }
 
-int chisq::printdat(const string &filename) const {
-  vector <int> setnums;
-  for (unsigned i = 0; i < dataname.size(); i++) setnums.push_back(i);
+int chisq::printdat(const string& filename) const
+{
+  vector<int> setnums;
+  for (unsigned i = 0; i < dataname.size(); i++)
+    setnums.push_back(i);
   return printdat(setnums, filename);
 }
 
-int chisq::printdat(const vector <int> &setnums, const string &filename) const {
+int chisq::printdat(const vector<int>& setnums, const string& filename) const
+{
   ostringstream os;
-  os << "#\t" << "E\t" << "F\t" << "err" << endl;
+  os << "#\t"
+     << "E\t"
+     << "F\t"
+     << "err" << endl;
   dealoutput(filename, os, ios_base::out);
 
   for (unsigned i = 0; i < setnums.size(); i++)
@@ -108,10 +121,11 @@ int chisq::printdat(const vector <int> &setnums, const string &filename) const {
   return 0;
 }
 
-int chisq::printdat(int setnum, const string &filename) const {
+int chisq::printdat(int setnum, const string& filename) const
+{
   ostringstream os;
   os << dataname[setnum] << endl
-    << setiosflags(ios::scientific) << setprecision(6);
+     << setiosflags(ios::scientific) << setprecision(6);
 
   for (unsigned i = 0; i < E[setnum].size(); i++)
     os << E[setnum][i] << " " << F[setnum][i] << " " << total_sigma[setnum][i] << endl;
@@ -120,7 +134,8 @@ int chisq::printdat(int setnum, const string &filename) const {
 }
 
 #ifndef NO_ROOT
-TGraphErrors *chisq::GetTGraphErrors(int setnum, double index) const {
+TGraphErrors* chisq::GetTGraphErrors(int setnum, double index) const
+{
   double Ftmp[F[setnum].size()], sigmatmp[total_sigma[setnum].size()];
 
   for (unsigned i = 0; i < F[setnum].size(); i++) {
@@ -128,18 +143,20 @@ TGraphErrors *chisq::GetTGraphErrors(int setnum, double index) const {
     sigmatmp[i] = total_sigma[setnum][i] * pow(E[setnum][i], index);
   }
 
-  TGraphErrors *result = new TGraphErrors(E[setnum].size(), &(E[setnum][0]), Ftmp, 0, sigmatmp);
+  TGraphErrors* result = new TGraphErrors(E[setnum].size(), &(E[setnum][0]), Ftmp, 0, sigmatmp);
   result->SetName(dataname[setnum].c_str());
   result->SetTitle(dataname[setnum].c_str());
 
   return result;
 }
 
-chisq::chisq(TGraphErrors *gr, double Eindx) {
+chisq::chisq(TGraphErrors* gr, double Eindx)
+{
   init(gr, Eindx);
   extra_sigma();
 }
-bool chisq::init(TGraphErrors *gr, double Eindx) {
+bool chisq::init(TGraphErrors* gr, double Eindx)
+{
   const string annotate = "#";
   int iset = addexperiment(annotate + gr->GetTitle());
 
@@ -155,34 +172,45 @@ bool chisq::init(TGraphErrors *gr, double Eindx) {
   return true;
 }
 
-chisq::chisq(const vector <TGraphErrors *> &grs, double Eindx) {
+chisq::chisq(const vector<TGraphErrors*>& grs, double Eindx)
+{
   init(grs, Eindx);
   extra_sigma();
 }
-bool chisq::init(const vector <TGraphErrors *> &grs, double Eindx) {
-  for (unsigned iset = 0; iset < grs.size(); iset++) init(grs[iset], Eindx);
+bool chisq::init(const vector<TGraphErrors*>& grs, double Eindx)
+{
+  for (unsigned iset = 0; iset < grs.size(); iset++)
+    init(grs[iset], Eindx);
   return false;
 }
 #endif
 
-int chisq::printsizes() const {
-  for(unsigned i = 0; i < dataname.size(); i++)
+int chisq::printsizes() const
+{
+  for (unsigned i = 0; i < dataname.size(); i++)
     cout << dataname[i] << " with " << E[i].size() << " points" << endl;
 
   return 0;
 }
 
-double chisq::chi2(const spectrum &phi, bool pflag, const string &filename, ios_base::openmode mode) const {
-  vector <int> setnums;
+double chisq::chi2(const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
+{
+  vector<int> setnums;
 
-  for (unsigned i = 0; i < dataname.size(); i++) setnums.push_back(i);
+  for (unsigned i = 0; i < dataname.size(); i++)
+    setnums.push_back(i);
 
   return chi2(setnums, phi, pflag, filename, mode);
 }
-double chisq::chi2(const vector <int> &setnums, const spectrum &phi, bool pflag, const string &filename, ios_base::openmode mode) const {
+double chisq::chi2(const vector<int>& setnums, const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
+{
   if (pflag) {
     ostringstream os;
-    os << "#\t" << "E\t" << "datF\t" << "F\t" << "err" << endl;
+    os << "#\t"
+       << "E\t"
+       << "datF\t"
+       << "F\t"
+       << "err" << endl;
     dealoutput(filename, os, mode);
   }
 
@@ -192,21 +220,29 @@ double chisq::chi2(const vector <int> &setnums, const spectrum &phi, bool pflag,
 
   return sum;
 }
-double chisq::chi2(int setnum, const spectrum &phi, bool pflag, const string &filename, ios_base::openmode mode) const {
+double chisq::chi2(int setnum, const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
+{
   return chi2(setnum, &(phi.E[0]), &(phi.F[0]), phi.E.size(), pflag, filename, mode);
 }
 
-double chisq::chi2(const pArray &E_, const pArray &F_, bool pflag, const string &filename, ios_base::openmode mode) const {
-  vector <int> setnums;
+double chisq::chi2(const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
+{
+  vector<int> setnums;
 
-  for (unsigned i = 0; i < dataname.size(); i++) setnums.push_back(i);
+  for (unsigned i = 0; i < dataname.size(); i++)
+    setnums.push_back(i);
 
   return chi2(setnums, E_, F_, pflag, filename, mode);
 }
-double chisq::chi2(const vector <int> &setnums, const pArray &E_, const pArray &F_, bool pflag, const string &filename, ios_base::openmode mode) const {
+double chisq::chi2(const vector<int>& setnums, const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
+{
   if (pflag) {
     ostringstream os;
-    os << "#\t" << "E\t" << "datF\t" << "F\t" << "err" << endl;
+    os << "#\t"
+       << "E\t"
+       << "datF\t"
+       << "F\t"
+       << "err" << endl;
     dealoutput(filename, os, mode);
   }
 
@@ -216,11 +252,13 @@ double chisq::chi2(const vector <int> &setnums, const pArray &E_, const pArray &
 
   return sum;
 }
-double chisq::chi2(int setnum, const pArray &E_, const pArray &F_, bool pflag, const string &filename, ios_base::openmode mode) const {
+double chisq::chi2(int setnum, const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
+{
   return chi2(setnum, E_.a, F_.a, E_.GetLength(), pflag, filename, mode);
 }
 
-double chisq::chi2(int setnum, const double *E_, const double *F_, int nsize, bool pflag, const std::string &filename, std::ios_base::openmode mode) const {
+double chisq::chi2(int setnum, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename, std::ios_base::openmode mode) const
+{
   static ostringstream os;
 
   const interp inp(E_, F_, nsize);
@@ -239,10 +277,10 @@ double chisq::chi2(int setnum, const double *E_, const double *F_, int nsize, bo
 
     if (pflag)
       os << " " << E[setnum][i]
-        << " " << F[setnum][i]
-        << " " << f_calc
-        << " " << total_sigma[setnum][i]
-        << endl;
+         << " " << F[setnum][i]
+         << " " << f_calc
+         << " " << total_sigma[setnum][i]
+         << endl;
   }
 
   if (pflag) {
@@ -253,11 +291,12 @@ double chisq::chi2(int setnum, const double *E_, const double *F_, int nsize, bo
   return sum;
 }
 
-int chisq::extra_sigma(const spectrum &sigma_) {
+int chisq::extra_sigma(const spectrum& sigma_)
+{
   const interp intpsigma(sigma_);
   total_sigma.clear();
 
-  vector <double> tmpsigma;
+  vector<double> tmpsigma;
   for (unsigned iset = 0; iset < sigma.size(); iset++) {
     tmpsigma.resize(sigma[iset].size());
     for (unsigned i = 0; i < sigma[iset].size(); i++) {
@@ -271,8 +310,10 @@ int chisq::extra_sigma(const spectrum &sigma_) {
   return 0;
 }
 
-int chisq::dealoutput(const string &filename, const ostringstream &os, ios_base::openmode mode) const {
-  if (filename == "null") cout << os.str();
+int chisq::dealoutput(const string& filename, const ostringstream& os, ios_base::openmode mode) const
+{
+  if (filename == "null")
+    cout << os.str();
   else {
     ofstream of(filename, mode);
     of << os.str();
