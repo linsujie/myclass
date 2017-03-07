@@ -291,6 +291,14 @@ double chisq::chi2(int setnum, const double* E_, const double* F_, int nsize, bo
   return sum;
 }
 
+int chisq::enlarge_sigma(double scale) {
+  cout << total_sigma[0][0] << endl;
+  for (auto& sigma_set : total_sigma)
+    for (auto& sigma_value : sigma_set)
+      sigma_value *= scale;
+  return true;
+}
+
 int chisq::extra_sigma(const spectrum& sigma_)
 {
   const interp intpsigma(sigma_);

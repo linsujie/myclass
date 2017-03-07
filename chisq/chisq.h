@@ -49,6 +49,7 @@ public:
 #endif
 
   int extra_sigma(const spectrum& sigma_ = zerospec);
+  int enlarge_sigma(double scale);
 
   double chi2(const pArray& E_, const pArray& F_, bool pflag = false,
               const std::string& filename = "null",
