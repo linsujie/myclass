@@ -261,7 +261,7 @@ double chisq::chi2(int setnum, const double* E_, const double* F_, int nsize, bo
 {
   static ostringstream os;
 
-  const interp inp(E_, F_, nsize);
+  interp inp(E_, F_, nsize);
   double sum = 0;
   double f_calc, diff;
 
@@ -271,7 +271,7 @@ double chisq::chi2(int setnum, const double* E_, const double* F_, int nsize, bo
   }
 
   for (int i = 0; i < int(E[setnum].size()); i++) {
-    f_calc = inp.lnask(E[setnum][i]);
+    f_calc = inp.lnask_check(E[setnum][i]);
     diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
     sum += diff * diff;
 
