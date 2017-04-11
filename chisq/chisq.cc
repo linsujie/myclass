@@ -301,7 +301,7 @@ int chisq::enlarge_sigma(double scale) {
 
 int chisq::extra_sigma(const spectrum& sigma_)
 {
-  const interp intpsigma(sigma_);
+  interp intpsigma(sigma_);
   total_sigma.clear();
 
   vector<double> tmpsigma;
@@ -309,7 +309,7 @@ int chisq::extra_sigma(const spectrum& sigma_)
     tmpsigma.resize(sigma[iset].size());
     for (unsigned i = 0; i < sigma[iset].size(); i++) {
       double normal = sigma[iset][i],
-             extra = intpsigma.lnask(E[iset][i]);
+             extra = intpsigma.lnask_check(E[iset][i]);
       tmpsigma[i] = sqrt(normal * normal + extra * extra);
     }
     total_sigma.push_back(tmpsigma);
