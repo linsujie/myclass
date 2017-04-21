@@ -32,7 +32,7 @@ NAME(mix_branch) = {
 #undef X
 #undef NAME
 
-#define X(TYPE) ENUMANDSTR(mcparas::TYPE, mcparas::TYPE##_name)
+#define X(TYPE) ENUMANDSTR(mcparas::TYPE)
   X(errtype) X(pppc_or_us) X(dm_mode) X(prop_mode) X(inject_mode) X(mix_branch)
 #undef X
 
