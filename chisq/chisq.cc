@@ -22,6 +22,9 @@ using std::ios;
 using std::ios_base;
 using std::setiosflags;
 using std::setprecision;
+using std::tuple;
+using std::bind;
+using std::make_tuple;
 
 const char chisq::annota[2] = "#";
 
@@ -29,10 +32,22 @@ const vector<double> zerox = { 1, 2 },
                      zeroy = { 0, 0 };
 const spectrum chisq::zerospec(zerox, zeroy);
 
+inline vector<int> seq(int imin, int imax)
+{
+  vector<int> result; result.reserve(imax - imin);
+  for (int i = imin; i < imax; i++) result.push_back(i);
+  return result;
+}
+
 chisq::chisq(const string& filename, double Eindx)
 {
   init(filename, Eindx);
   extra_sigma();
+  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2.set_nums(seq(0, dataname.size()));
+
+  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2_RHOVALUE.set_nums(seq(0, dataname.size()));
 }
 
 chisq::chisq(const chisq& another)
@@ -100,12 +115,8 @@ int chisq::init(const string& filename, double Eindx)
 
 int chisq::printdat(const string& filename) const
 {
-  vector<int> setnums;
-  for (unsigned i = 0; i < dataname.size(); i++)
-    setnums.push_back(i);
-  return printdat(setnums, filename);
+  return printdat(seq(0, dataname.size()), filename);
 }
-
 int chisq::printdat(const vector<int>& setnums, const string& filename) const
 {
   ostringstream os;
@@ -113,24 +124,21 @@ int chisq::printdat(const vector<int>& setnums, const string& filename) const
      << "E\t"
      << "F\t"
      << "err" << endl;
-  dealoutput(filename, os, ios_base::out);
 
-  for (unsigned i = 0; i < setnums.size(); i++)
-    printdat(setnums[i], filename);
+  os << setiosflags(ios::scientific) << setprecision(6);
 
+  for (auto setnum : setnums) {
+    os << dataname[setnum] << endl;
+    for (unsigned i = 0; i < E[setnum].size(); i++)
+      os << E[setnum][i] << " " << F[setnum][i] << " " << total_sigma[setnum][i] << endl;
+  }
+
+  dealoutput(filename, os);
   return 0;
 }
-
 int chisq::printdat(int setnum, const string& filename) const
 {
-  ostringstream os;
-  os << dataname[setnum] << endl
-     << setiosflags(ios::scientific) << setprecision(6);
-
-  for (unsigned i = 0; i < E[setnum].size(); i++)
-    os << E[setnum][i] << " " << F[setnum][i] << " " << total_sigma[setnum][i] << endl;
-
-  return dealoutput(filename, os, ios_base::app);
+  return printdat({ setnum }, filename);
 }
 
 #ifndef NO_ROOT
@@ -193,107 +201,102 @@ int chisq::printsizes() const
   return 0;
 }
 
-double chisq::chi2(const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  vector<int> setnums;
-
-  for (unsigned i = 0; i < dataname.size(); i++)
-    setnums.push_back(i);
-
-  return chi2(setnums, phi, pflag, filename, mode);
-}
-double chisq::chi2(const vector<int>& setnums, const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  if (pflag) {
-    ostringstream os;
-    os << "#\t"
-       << "E\t"
-       << "datF\t"
-       << "F\t"
-       << "err" << endl;
-    dealoutput(filename, os, mode);
-  }
-
-  double sum = 0;
-  for (unsigned i = 0; i < setnums.size(); i++)
-    sum += chi2(setnums[i], phi, pflag, filename, ios_base::app);
-
-  return sum;
-}
-double chisq::chi2(int setnum, const spectrum& phi, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  return chi2(setnum, &(phi.E[0]), &(phi.F[0]), phi.E.size(), pflag, filename, mode);
-}
-
-double chisq::chi2(const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  vector<int> setnums;
-
-  for (unsigned i = 0; i < dataname.size(); i++)
-    setnums.push_back(i);
-
-  return chi2(setnums, E_, F_, pflag, filename, mode);
-}
-double chisq::chi2(const vector<int>& setnums, const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  if (pflag) {
-    ostringstream os;
-    os << "#\t"
-       << "E\t"
-       << "datF\t"
-       << "F\t"
-       << "err" << endl;
-    dealoutput(filename, os, mode);
-  }
-
-  double sum = 0;
-  for (unsigned i = 0; i < setnums.size(); i++)
-    sum += chi2(setnums[i], E_, F_, pflag, filename, ios_base::app);
-
-  return sum;
-}
-double chisq::chi2(int setnum, const pArray& E_, const pArray& F_, bool pflag, const string& filename, ios_base::openmode mode) const
-{
-  return chi2(setnum, E_.a, F_.a, E_.GetLength(), pflag, filename, mode);
-}
-
-double chisq::chi2(int setnum, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename, std::ios_base::openmode mode) const
+double chisq::chi2_calc(const vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename) const
 {
   static ostringstream os;
+  if (pflag) {
+    os.str("");
+    os << "#\t"
+       << "E\t"
+       << "datF\t"
+       << "F\t"
+       << "err" << endl;
+    os << setiosflags(ios::scientific) << setprecision(6);
+  }
 
-  const interp inp(E_, F_, nsize);
+  interp inp(E_, F_, nsize);
   double sum = 0;
   double f_calc, diff;
 
-  if (pflag) {
-    os.str("");
-    os << dataname[setnum] << endl << setiosflags(ios::scientific) << setprecision(6);
-  }
+  for (auto setnum : setnums) {
+    if (pflag) os << dataname[setnum] << endl;
+    for (int i = 0; i < int(E[setnum].size()); i++) {
+      f_calc = inp.lnask_check(E[setnum][i]);
+      diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
+      sum += diff * diff;
 
-  for (int i = 0; i < int(E[setnum].size()); i++) {
-    f_calc = inp.lnask(E[setnum][i]);
-    diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
-    sum += diff * diff;
-
-    if (pflag)
-      os << " " << E[setnum][i]
-         << " " << F[setnum][i]
-         << " " << f_calc
-         << " " << total_sigma[setnum][i]
-         << endl;
+      if (pflag)
+        os << " " << E[setnum][i]
+          << " " << F[setnum][i]
+          << " " << f_calc
+          << " " << total_sigma[setnum][i]
+          << endl;
+    }
   }
 
   if (pflag) {
     os << "# chi2: " << sum << endl;
-    dealoutput(filename, os, mode);
+    dealoutput(filename, os);
+  }
+  return sum;
+}
+
+tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const string& filename) const
+{
+  static ostringstream os;
+  if (pflag) {
+    os.str("");
+    os << "#\t"
+       << "E\t"
+       << "datF\t"
+       << "F\t"
+       << "err" << endl;
+    os << setiosflags(ios::scientific) << setprecision(6);
   }
 
-  return sum;
+  interp inp(E_, F_, nsize);
+  double chi = 0, rho = 0;
+
+  for (auto setnum : setnums) {
+    if (pflag) os << dataname[setnum] << endl;
+
+    double last_diff = 0;
+    for (int i = 0; i < int(E[setnum].size()); i++) {
+      double f_calc = inp.lnask_check(E[setnum][i]);
+      double diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
+      chi += diff * diff;
+      if (i >= 1) rho += last_diff * diff;
+      last_diff = diff;
+
+      if (pflag)
+        os << " " << E[setnum][i]
+          << " " << F[setnum][i]
+          << " " << f_calc
+          << " " << total_sigma[setnum][i]
+          << endl;
+    }
+  }
+  rho /= chi;
+
+  if (pflag) {
+    os << "# chi2: " << chi << "  rho: " << rho << endl;
+    dealoutput(filename, os);
+  }
+  return make_tuple(chi, rho);
+}
+
+int chisq::enlarge_sigma(double scale)
+{
+  cout << total_sigma[0][0] << endl;
+  for (auto& sigma_set : total_sigma)
+    for (auto& sigma_value : sigma_set)
+      sigma_value *= scale;
+  return true;
 }
 
 int chisq::extra_sigma(const spectrum& sigma_)
 {
-  const interp intpsigma(sigma_);
+  interp intpsigma(sigma_);
   total_sigma.clear();
 
   vector<double> tmpsigma;
@@ -301,7 +304,7 @@ int chisq::extra_sigma(const spectrum& sigma_)
     tmpsigma.resize(sigma[iset].size());
     for (unsigned i = 0; i < sigma[iset].size(); i++) {
       double normal = sigma[iset][i],
-             extra = intpsigma.lnask(E[iset][i]);
+             extra = intpsigma.lnask_check(E[iset][i]);
       tmpsigma[i] = sqrt(normal * normal + extra * extra);
     }
     total_sigma.push_back(tmpsigma);
@@ -310,12 +313,12 @@ int chisq::extra_sigma(const spectrum& sigma_)
   return 0;
 }
 
-int chisq::dealoutput(const string& filename, const ostringstream& os, ios_base::openmode mode) const
+int chisq::dealoutput(const string& filename, const ostringstream& os) const
 {
   if (filename == "null")
     cout << os.str();
   else {
-    ofstream of(filename, mode);
+    ofstream of(filename);
     of << os.str();
     of.close();
   }

@@ -91,8 +91,4 @@ public:
   Galdef* getpoint() const throw();
   unsigned np() const throw();
 };
-#define X(TYPE) ENUMDECLEAR(mcparas::TYPE)
-  X(errtype) X(pppc_or_us) X(dm_mode) X(prop_mode) X(inject_mode) X(mix_branch)
-#undef X
-
 #endif // for #ifndef _MCPARAS_H
