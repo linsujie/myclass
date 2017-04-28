@@ -57,6 +57,12 @@ chisq::chisq(const chisq& another)
   sigma = another.sigma;
   total_sigma = another.total_sigma;
   dataname = another.dataname;
+
+  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2.set_nums(seq(0, dataname.size()));
+
+  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2_RHOVALUE.set_nums(seq(0, dataname.size()));
 }
 
 const vector<double> emptyvec;
