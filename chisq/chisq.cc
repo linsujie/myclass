@@ -207,6 +207,27 @@ int chisq::printsizes() const
   return 0;
 }
 
+unsigned chisq::size(int setnum) const { return E[setnum].size(); }
+unsigned chisq::size(const vector<int>& setnums) const
+{
+  unsigned sum = 0;
+  for (auto i : setnums) sum += E[i].size();
+  return sum;
+}
+unsigned chisq::size() const { return size(seq(0, E.size())); }
+
+tuple<double, double> chisq::RHOVALUE_distribution(const vector<unsigned>& Ns)
+{
+  unsigned N = 0, Nbio = Ns.size();
+  for (auto i : Ns) N += i;
+
+  double mu = - 1.0 / N * (N - Nbio) / (N - 1),
+         sigma2 = (N - 2.0) * (N - 2.0) / (N * N * (N - 1)) * (N - Nbio) / (N - 1),
+         sigma = sqrt(sigma2);
+
+  return make_tuple(mu, sigma);
+}
+
 double chisq::chi2_calc(const vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename) const
 {
   static ostringstream os;

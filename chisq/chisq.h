@@ -69,6 +69,9 @@ public:
   chisq(const chisq& another);
 
   int printsizes() const;
+  unsigned size() const;
+  unsigned size(int setnum) const;
+  unsigned size(const std::vector<int>& setnums) const;
 
   int printdat(const std::string& filename = "null") const;
   int printdat(const std::vector<int>& setnums,
@@ -77,6 +80,8 @@ public:
 
   chisq_interface<double> chi2;
   chisq_interface<std::tuple<double,double> > chi2_RHOVALUE;
+
+  static std::tuple<double,double> RHOVALUE_distribution(const std::vector<unsigned>& Ns);
 
 #ifndef NO_ROOT
   TGraphErrors* GetTGraphErrors(int setnum, double index = 0) const;
