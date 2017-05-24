@@ -125,6 +125,7 @@ int chisq::printdat(const string& filename) const
 }
 int chisq::printdat(const vector<int>& setnums, const string& filename) const
 {
+  cout << "printing " << setnums << endl;
   ostringstream os;
   os << "#\t"
      << "E\t"
@@ -144,7 +145,8 @@ int chisq::printdat(const vector<int>& setnums, const string& filename) const
 }
 int chisq::printdat(int setnum, const string& filename) const
 {
-  return printdat({ setnum }, filename);
+  vector<int> setnums = { setnum };
+  return printdat(setnums, filename);
 }
 
 #ifndef NO_ROOT

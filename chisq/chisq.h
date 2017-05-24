@@ -53,7 +53,6 @@ class chisq
 protected:
   static const char annota[2];
   static const spectrum zerospec;
-  std::vector<std::vector<double> > E, F, sigma, total_sigma;
   std::vector<std::string> dataname;
   int init(const std::string& filename, double Eindx);
 #ifndef NO_ROOT
@@ -65,6 +64,7 @@ protected:
   int dealoutput(const std::string& filename, const std::ostringstream& os) const;
 
 public:
+  std::vector<std::vector<double> > E, F, sigma, total_sigma;
   chisq(const std::string& filename, double Eindx = 0);
   chisq(const chisq& another);
 
