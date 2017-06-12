@@ -15,37 +15,48 @@
 
 #include "pArray.h"
 #include "spectrum.h"
+#include "interp.h"
 
 template<typename T>
 class chisq_interface
 {
 public:
   void set_nums(const std::vector<int>& setnums_) { whole_setnums = setnums_; }
-  void setfunction(const std::function<T(const std::vector<int>&, const double*, const double*, int, bool, const std::string&)>& func_) { func = func_; }
+  void setfunction(const std::function<T(const std::vector<int>&, interp intp, bool, const std::string&)>& func_) { func = func_; }
 
   T operator()(const spectrum& phi, bool pflag = false, const std::string& filename = "null") const {
-    return func(whole_setnums, &(phi.E[0]), &(phi.F[0]), phi.E.size(), pflag, filename);
+    return func(whole_setnums, interp(&(phi.E[0]), &(phi.F[0]), phi.E.size()), pflag, filename);
   }
   T operator()(int setnum, const spectrum& phi, bool pflag = false, const std::string& filename = "null") const {
-    return func({ setnum }, &(phi.E[0]), &(phi.F[0]), phi.E.size(), pflag, filename);
+    return func({ setnum }, interp(&(phi.E[0]), &(phi.F[0]), phi.E.size()), pflag, filename);
   }
   T operator()(const std::vector<int>& setnums, const spectrum& phi, bool pflag = false, const std::string& filename = "null") const {
-    return func(setnums, &(phi.E[0]), &(phi.F[0]), phi.E.size(), pflag, filename);
+    return func(setnums, interp(&(phi.E[0]), &(phi.F[0]), phi.E.size()), pflag, filename);
+  }
+
+  T operator()(const interp& intp, bool pflag = false, const std::string& filename = "null") const {
+    return func(whole_setnums, intp, pflag, filename);
+  }
+  T operator()(int setnum, const interp& intp, bool pflag = false, const std::string& filename = "null") const {
+    return func({ setnum }, intp, pflag, filename);
+  }
+  T operator()(const std::vector<int>& setnums, const interp& intp, bool pflag = false, const std::string& filename = "null") const {
+    return func(setnums, intp, pflag, filename);
   }
 
   T operator()(const pArray& E_, const pArray& F_, bool pflag = false, const std::string& filename = "null") const {
-    return func(whole_setnums, E_.a, F_.a, E_.GetLength(), pflag, filename);
+    return func(whole_setnums, interp(E_.a, F_.a, E_.GetLength()), pflag, filename);
   }
   T operator()(int setnum, const pArray& E_, const pArray& F_, bool pflag = false, const std::string& filename = "null") const {
-    return func({ setnum }, E_.a, F_.a, E_.GetLength(), pflag, filename);
+    return func({ setnum }, interp(E_.a, F_.a, E_.GetLength()), pflag, filename);
   }
   T operator()(const std::vector<int>& setnums, const pArray& E_, const pArray& F_, bool pflag = false, const std::string& filename = "null") const {
-    return func(setnums, E_.a, F_.a, E_.GetLength(), pflag, filename);
+    return func(setnums, interp(E_.a, F_.a, E_.GetLength()), pflag, filename);
   }
 
 private:
   std::vector<int> whole_setnums;
-  std::function<T(const std::vector<int>&, const double*, const double*, int, bool, const std::string& filename)> func;
+  std::function<T(const std::vector<int>&, interp intp, bool, const std::string& filename)> func;
 };
 
 class chisq
@@ -94,7 +105,7 @@ public:
   int enlarge_sigma(double scale);
 
 private:
-  double chi2_calc(const std::vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename) const;
-  std::tuple<double,double> chi2_RHOVALUE_calc(const std::vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename) const;
+  double chi2_calc(const std::vector<int>& setnums, interp intp, bool pflag, const std::string& filename) const;
+  std::tuple<double,double> chi2_RHOVALUE_calc(const std::vector<int>& setnums, interp intp, bool pflag, const std::string& filename) const;
 };
 #endif // for #ifndef _CHISQ_H

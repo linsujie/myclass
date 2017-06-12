@@ -43,10 +43,10 @@ chisq::chisq(const string& filename, double Eindx)
 {
   init(filename, Eindx);
   extra_sigma();
-  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   chi2.set_nums(seq(0, dataname.size()));
 
-  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   chi2_RHOVALUE.set_nums(seq(0, dataname.size()));
 }
 
@@ -58,10 +58,10 @@ chisq::chisq(const chisq& another)
   total_sigma = another.total_sigma;
   dataname = another.dataname;
 
-  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   chi2.set_nums(seq(0, dataname.size()));
 
-  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   chi2_RHOVALUE.set_nums(seq(0, dataname.size()));
 }
 
@@ -230,7 +230,7 @@ tuple<double, double> chisq::RHOVALUE_distribution(const vector<unsigned>& Ns)
   return make_tuple(mu, sigma);
 }
 
-double chisq::chi2_calc(const vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const std::string& filename) const
+double chisq::chi2_calc(const vector<int>& setnums, interp intp, bool pflag, const std::string& filename) const
 {
   static ostringstream os;
   if (pflag) {
@@ -243,14 +243,13 @@ double chisq::chi2_calc(const vector<int>& setnums, const double* E_, const doub
     os << setiosflags(ios::scientific) << setprecision(6);
   }
 
-  interp inp(E_, F_, nsize);
   double sum = 0;
   double f_calc, diff;
 
   for (auto setnum : setnums) {
     if (pflag) os << dataname[setnum] << endl;
     for (int i = 0; i < int(E[setnum].size()); i++) {
-      f_calc = inp.lnask_check(E[setnum][i]);
+      f_calc = intp.lnask_check(E[setnum][i]);
       diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
       sum += diff * diff;
 
@@ -270,7 +269,7 @@ double chisq::chi2_calc(const vector<int>& setnums, const double* E_, const doub
   return sum;
 }
 
-tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, const double* E_, const double* F_, int nsize, bool pflag, const string& filename) const
+tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, interp intp, bool pflag, const string& filename) const
 {
   static ostringstream os;
   if (pflag) {
@@ -283,7 +282,6 @@ tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, const
     os << setiosflags(ios::scientific) << setprecision(6);
   }
 
-  interp inp(E_, F_, nsize);
   double chi = 0, rho = 0;
 
   for (auto setnum : setnums) {
@@ -291,7 +289,7 @@ tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, const
 
     double last_diff = 0;
     for (int i = 0; i < int(E[setnum].size()); i++) {
-      double f_calc = inp.lnask_check(E[setnum][i]);
+      double f_calc = intp.lnask_check(E[setnum][i]);
       double diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
       chi += diff * diff;
       if (i >= 1) rho += last_diff * diff;
