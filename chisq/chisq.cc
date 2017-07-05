@@ -43,11 +43,7 @@ chisq::chisq(const string& filename, double Eindx)
 {
   init(filename, Eindx);
   extra_sigma();
-  chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-  chi2.set_nums(seq(0, dataname.size()));
-
-  chi2_RHOVALUE.setfunction(bind(&chisq::chi2_RHOVALUE_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-  chi2_RHOVALUE.set_nums(seq(0, dataname.size()));
+  bind_function();
 }
 
 chisq::chisq(const chisq& another)
@@ -58,6 +54,11 @@ chisq::chisq(const chisq& another)
   total_sigma = another.total_sigma;
   dataname = another.dataname;
 
+  bind_function();
+}
+
+void chisq::bind_function()
+{
   chi2.setfunction(bind(&chisq::chi2_calc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   chi2.set_nums(seq(0, dataname.size()));
 
@@ -170,6 +171,7 @@ chisq::chisq(TGraphErrors* gr, double Eindx)
 {
   init(gr, Eindx);
   extra_sigma();
+  bind_function();
 }
 bool chisq::init(TGraphErrors* gr, double Eindx)
 {
@@ -192,6 +194,7 @@ chisq::chisq(const vector<TGraphErrors*>& grs, double Eindx)
 {
   init(grs, Eindx);
   extra_sigma();
+  bind_function();
 }
 bool chisq::init(const vector<TGraphErrors*>& grs, double Eindx)
 {

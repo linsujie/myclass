@@ -107,5 +107,6 @@ public:
 private:
   double chi2_calc(const std::vector<int>& setnums, interp intp, bool pflag, const std::string& filename) const;
   std::tuple<double,double> chi2_RHOVALUE_calc(const std::vector<int>& setnums, interp intp, bool pflag, const std::string& filename) const;
+  void bind_function();
 };
 #endif // for #ifndef _CHISQ_H
