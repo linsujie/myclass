@@ -76,9 +76,11 @@ protected:
 
 public:
   std::vector<std::vector<double> > E, F, sigma, total_sigma;
+  chisq();
   chisq(const std::string& filename, double Eindx = 0);
   chisq(const chisq& another);
 
+  std::string get_dataname(int setnum = 0) const;
   int printsizes() const;
   unsigned size() const;
   unsigned size(int setnum) const;

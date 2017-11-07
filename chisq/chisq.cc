@@ -17,6 +17,7 @@ using std::ostringstream;
 using std::vector;
 using std::string;
 using std::cout;
+using std::cerr;
 using std::endl;
 using std::ios;
 using std::ios_base;
@@ -38,6 +39,8 @@ inline vector<int> seq(int imin, int imax)
   for (int i = imin; i < imax; i++) result.push_back(i);
   return result;
 }
+
+chisq::chisq() { bind_function(); }
 
 chisq::chisq(const string& filename, double Eindx)
 {
@@ -126,6 +129,7 @@ int chisq::printdat(const string& filename) const
 }
 int chisq::printdat(const vector<int>& setnums, const string& filename) const
 {
+  if (setnums.size() == 0) return 1;
   cout << "printing " << setnums << endl;
   ostringstream os;
   os << "#\t"
@@ -136,6 +140,7 @@ int chisq::printdat(const vector<int>& setnums, const string& filename) const
   os << setiosflags(ios::scientific) << setprecision(6);
 
   for (auto setnum : setnums) {
+    if (setnum >= dataname.size()) continue;
     os << dataname[setnum] << endl;
     for (unsigned i = 0; i < E[setnum].size(); i++)
       os << E[setnum][i] << " " << F[setnum][i] << " " << total_sigma[setnum][i] << endl;
@@ -250,6 +255,10 @@ double chisq::chi2_calc(const vector<int>& setnums, interp intp, bool pflag, con
   double f_calc, diff;
 
   for (auto setnum : setnums) {
+    if (setnum >= dataname.size()) {
+      cerr << "WARNING::chisq::chi2::You are trying to calculate the chi2_RHOVALUE with " << setnum << "th data, which is unexist!" << endl;
+      continue;
+    }
     if (pflag) os << dataname[setnum] << endl;
     for (int i = 0; i < int(E[setnum].size()); i++) {
       f_calc = intp.lnask_check(E[setnum][i]);
@@ -288,6 +297,10 @@ tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, inter
   double chi = 0, rho = 0;
 
   for (auto setnum : setnums) {
+    if (setnum >= dataname.size()) {
+      cerr << "WARNING::chisq::chi2_RHOVALUE::You are trying to calculate the chi2_RHOVALUE with " << setnum << "th data, which is unexist!" << endl;
+      continue;
+    }
     if (pflag) os << dataname[setnum] << endl;
 
     double last_diff = 0;
@@ -354,4 +367,14 @@ int chisq::dealoutput(const string& filename, const ostringstream& os) const
   }
 
   return 0;
+}
+
+string chisq::get_dataname(int setnum) const
+{
+  if (setnum >= dataname.size()) {
+    cerr << "WARNING::chisq::get_dataname::You are trying to get the name of " << setnum << "th data, which is unexist!" << endl;
+    return "";
+  }
+
+  return dataname[setnum];
 }
