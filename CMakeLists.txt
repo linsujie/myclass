@@ -104,6 +104,9 @@ FOREACH(source IN LISTS CLASS)
   ENDIF(index EQUAL -1)
 ENDFOREACH(source)
 
+FILE(GLOB sources "${CMAKE_SOURCE_DIR}/quadrature/*cc")
+LIST(APPEND SRCLIN ${sources})
+
 ADD_LIBRARY_MYCLASS(lins "${SRCLIN}")
 IF (GalpWrapper_FOUND)
   ADD_LIBRARY_MYCLASS(works "${SRCWORK}")
