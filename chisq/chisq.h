@@ -73,9 +73,12 @@ protected:
   int addexperiment(const std::string& line);
 
   int dealoutput(const std::string& filename, const std::ostringstream& os) const;
+  bool underflow(double E) const;
+  bool overflow(double E) const;
 
 public:
   std::vector<std::vector<double> > E, F, sigma, total_sigma;
+  double lowcut, upcut;
   chisq();
   chisq(const std::string& filename, double Eindx = 0);
   chisq(const chisq& another);

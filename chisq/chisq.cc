@@ -6,6 +6,7 @@
 #include <cstring>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
 #include "interp.h"
 #include "chisq.h"
 #include "oformat.h"
@@ -40,16 +41,16 @@ inline vector<int> seq(int imin, int imax)
   return result;
 }
 
-chisq::chisq() { bind_function(); }
+chisq::chisq() : lowcut(-1), upcut(-1) { bind_function(); }
 
-chisq::chisq(const string& filename, double Eindx)
+chisq::chisq(const string& filename, double Eindx) : lowcut(-1), upcut(-1)
 {
   init(filename, Eindx);
   extra_sigma();
   bind_function();
 }
 
-chisq::chisq(const chisq& another)
+chisq::chisq(const chisq& another) : lowcut(another.lowcut), upcut(another.upcut)
 {
   E = another.E;
   F = another.F;
@@ -172,7 +173,7 @@ TGraphErrors* chisq::GetTGraphErrors(int setnum, double index) const
   return result;
 }
 
-chisq::chisq(TGraphErrors* gr, double Eindx)
+chisq::chisq(TGraphErrors* gr, double Eindx) : lowcut(-1), upcut(-1)
 {
   init(gr, Eindx);
   extra_sigma();
@@ -195,7 +196,7 @@ bool chisq::init(TGraphErrors* gr, double Eindx)
   return true;
 }
 
-chisq::chisq(const vector<TGraphErrors*>& grs, double Eindx)
+chisq::chisq(const vector<TGraphErrors*>& grs, double Eindx) : lowcut(-1), upcut(-1)
 {
   init(grs, Eindx);
   extra_sigma();
@@ -217,7 +218,13 @@ int chisq::printsizes() const
   return 0;
 }
 
-unsigned chisq::size(int setnum) const { return E[setnum].size(); }
+unsigned chisq::size(int setnum) const {
+  auto lowiter = lowcut < 0 ? E[setnum].begin() : std::lower_bound(E[setnum].begin(), E[setnum].end(), lowcut),
+       upiter = upcut < 0 ? E[setnum].end() : std::upper_bound(E[setnum].begin(), E[setnum].end(), upcut);
+  upiter--;
+
+  return upiter - lowiter + 1;
+}
 unsigned chisq::size(const vector<int>& setnums) const
 {
   unsigned sum = 0;
@@ -261,6 +268,8 @@ double chisq::chi2_calc(const vector<int>& setnums, interp intp, bool pflag, con
     }
     if (pflag) os << dataname[setnum] << endl;
     for (int i = 0; i < int(E[setnum].size()); i++) {
+      if (overflow(E[setnum][i]) || underflow(E[setnum][i])) continue;
+
       f_calc = intp.lnask_check(E[setnum][i]);
       diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
       sum += diff * diff;
@@ -305,10 +314,12 @@ tuple<double,double> chisq::chi2_RHOVALUE_calc(const vector<int>& setnums, inter
 
     double last_diff = 0;
     for (int i = 0; i < int(E[setnum].size()); i++) {
+      if (overflow(E[setnum][i]) || underflow(E[setnum][i])) continue;
+
       double f_calc = intp.lnask_check(E[setnum][i]);
       double diff = (F[setnum][i] - f_calc) / total_sigma[setnum][i];
       chi += diff * diff;
-      if (i >= 1) rho += last_diff * diff;
+      rho += last_diff * diff;
       last_diff = diff;
 
       if (pflag)
@@ -368,6 +379,9 @@ int chisq::dealoutput(const string& filename, const ostringstream& os) const
 
   return 0;
 }
+
+bool chisq::underflow(double E) const { return lowcut > 0 && E < lowcut; }
+bool chisq::overflow(double E) const { return upcut > 0 && E > upcut; }
 
 string chisq::get_dataname(int setnum) const
 {
