@@ -59,7 +59,7 @@ double qiter(qGaus& q, double low, double up, double err) {
   double vG7 = q.qG7(),
          vK15 = q.qK15();
 
-  if (fabs(vK15 - vG7) < err * fabs(vK15) || vK15 == 0) return vK15;
+  if (fabs(vK15 - vG7) <= err * fabs(vK15)) return vK15;
 
   return qiter(q, low, (low + up) / 2, err) + qiter(q, (low + up) / 2, up, err);
 }
@@ -71,7 +71,7 @@ double qadaptive(const function <double(const double)>& func, double low, double
 }
 
 double qiter_positive(qGaus& q, double low, double up, double vG7, double vK15, double err) {
-  if (fabs(vK15 - vG7) < err * fabs(vK15) || fabs(vK15) < err * q.s || vK15 == 0) return vK15;
+  if (fabs(vK15 - vG7) <= err * fabs(vK15) || fabs(vK15) < err * q.s) return vK15;
 
   q.s -= vK15;
 
