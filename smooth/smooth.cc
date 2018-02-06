@@ -90,7 +90,6 @@ spectrum smooth(const interp& intp, double step_size, int filter_length, int pol
          xmax = intp.x_tab[intp.dim - 1];
 
   spectrum spec;
-  cout << "xmin xmax " << xmin << " " << xmax << " dim " << intp.dim  << " step_size " << step_size << endl;
   for (double x = xmin; x <= xmax; x += step_size)
     spec.add_p(x, intp.linask(x));
 
