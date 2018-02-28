@@ -22,6 +22,10 @@ STRING(REPLACE " " ";" CMAKE_CXX_FLAGS_LIST ${CMAKE_CXX_FLAGS})
 
 SET(COMPILE_LOG "${CMAKE_BINARY_DIR}/.myclass.auto.cmake")
 
+IF (NOT LIBRARY_TYPE)
+  SET(LIBRARY_TYPE STATIC)
+ENDIF()
+
 LIST(FIND FLAGS "NO_ROOT" no_root_index)
 IF ("${no_root_index}" STREQUAL "-1")
   FIND_PACKAGE(Root)
@@ -68,6 +72,7 @@ MESSAGE(STATUS "The class that you want to open the debug option::      DLIST = 
 MESSAGE(STATUS "The debug option: ['', '-D_DEBUG', '-DDEBUG_TO_FILE']:: DEBUG = ${DEBUG}")
 MESSAGE(STATUS "The direction that GalpWrapper installed::              GalpWrapper_ROOT_DIR = ${GalpWrapper_ROOT_DIR}  [FOUND? ${GalpWrapper_FOUND}]")
 MESSAGE(STATUS "Supported flag: [NO_ROOT]::                             FLAGS = ${FLAGS}")
+MESSAGE(STATUS "================ ${LIBRARY_TYPE} library would be generated ================")
 
 SET(WORKLIST chi2prop mcparas anaspec_zhou)
 SET(SUBMODULES antinucleus dm_production interpolator utils)
@@ -108,8 +113,20 @@ FILE(GLOB sources "${CMAKE_SOURCE_DIR}/quadrature/*cc")
 LIST(APPEND SRCLIN ${sources})
 
 ADD_LIBRARY_MYCLASS(lins "${SRCLIN}")
+TARGET_LINK_LIBRARIES(lins ${lin_LIBRARIES})
+SET_TARGET_PROPERTIES(lins PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 IF (GalpWrapper_FOUND)
   ADD_LIBRARY_MYCLASS(works "${SRCWORK}")
+
+  SET(work_LIBRARIES_temp "")
+  FOREACH(lib ${work_LIBRARIES})
+    STRING(REGEX MATCH ".so$" mat ${lib})
+    IF(mat)
+      LIST(APPEND work_LIBRARIES_temp ${lib})
+    ENDIF()
+  ENDFOREACH()
+  TARGET_LINK_LIBRARIES(works ${work_LIBRARIES_temp})
+  SET_TARGET_PROPERTIES(works PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 ENDIF()
 
 INSTALL(FILES ${HEAD} DESTINATION include)
