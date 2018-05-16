@@ -131,7 +131,6 @@ int chisq::printdat(const string& filename) const
 int chisq::printdat(const vector<int>& setnums, const string& filename) const
 {
   if (setnums.size() == 0) return 1;
-  cout << "printing " << setnums << endl;
   ostringstream os;
   os << "#\t"
      << "E\t"
