@@ -93,6 +93,5 @@ spectrum smooth(const interp& intp, double step_size, int filter_length, int pol
   for (double x = xmin; x <= xmax; x += step_size)
     spec.add_p(x, intp.linask(x));
 
-  cout << spec.E.size() << endl;
   return smooth(spec, filter_length, polynomial_order);
 }
