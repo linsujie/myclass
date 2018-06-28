@@ -12,7 +12,7 @@ double ln_factor(int n, int m = -1)
   double lnvalue = 0, temp_value = 1, test_temp_value = temp_value;
   for (int i = n; i > n - m; i--) {
     test_temp_value *= i;
-    if (isinf(test_temp_value)) {
+    if (std::isinf(test_temp_value)) {
       lnvalue += log(temp_value);
       temp_value = test_temp_value = i;
     } else temp_value = test_temp_value;
