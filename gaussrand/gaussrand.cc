@@ -40,4 +40,3 @@ void testrand(double func(), double x_min, double x_max, double x_step, unsigned
   for (map <double, unsigned>::const_iterator it = bin.begin(); it != bin.end(); it++)
     cout << it->first << "\t" << double(it->second) / n_sample << endl;
 }
-
