@@ -1,7 +1,7 @@
 #ifndef TEMPLATE_WRITER_H
 #define TEMPLATE_WRITER_H
 
-#include <cstring>
+#include <string>
 #include <vector>
 #include <map>
 
