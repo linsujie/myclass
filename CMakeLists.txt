@@ -64,6 +64,8 @@ ENDFOREACH()
 WRITE_OPTION_APPEND(FLAGS "${FLAGS}")
 WRITE_END()
 
+ADOPT_FLAGS(${FLAGS})
+
 MESSAGE("The compiling options set as:")
 MESSAGE(STATUS "INSTALL PREFIX::                                        CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "Compiling flag::                                        CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
